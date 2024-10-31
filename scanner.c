@@ -439,6 +439,8 @@ void print_token()
   }
 }
 
+int num_of_num = 0;
+
 void convert(FILE *in, FILE *out)
 {
 	lexin = in;
@@ -447,8 +449,12 @@ void convert(FILE *in, FILE *out)
 	get_char();
 	get_token();
 	while (token != TOKEN_EOF) {
-    fprintf(lexout, "%d\t", lineno);
-		print_token();
+    if (token == TOKEN_NUM) {
+      num_of_num++;
+    }
+    // fprintf(lexout, "%d\t", lineno);
 		get_token();
 	}
+
+  fprintf(lexout, "%d", num_of_num);
 }

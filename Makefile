@@ -1,5 +1,5 @@
-sc	:	main.o scanner.o keywords.o misc.o
-	gcc -o sc main.o scanner.o keywords.o misc.o
+numtotal	:	main.o scanner.o keywords.o misc.o
+	gcc -o numtotal main.o scanner.o keywords.o misc.o
 
 main.o	:	main.c sc.h
 	gcc -c main.c
