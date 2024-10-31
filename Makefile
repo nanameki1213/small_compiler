@@ -10,6 +10,6 @@ keywords.o	:	keywords.c sc.h
 misc.o	:	misc.c sc.h
 	gcc -c misc.c
 clean	:	
-	rm sc *.o
+	rm numtotal *.o
 wc	:	
 	wc *.c

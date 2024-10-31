@@ -439,7 +439,7 @@ void print_token()
   }
 }
 
-int num_of_num = 0;
+int num = 0;
 
 void convert(FILE *in, FILE *out)
 {
@@ -450,11 +450,10 @@ void convert(FILE *in, FILE *out)
 	get_token();
 	while (token != TOKEN_EOF) {
     if (token == TOKEN_NUM) {
-      num_of_num++;
+      num += atoi(lexvalue);
     }
-    // fprintf(lexout, "%d\t", lineno);
 		get_token();
 	}
 
-  fprintf(lexout, "%d", num_of_num);
+  fprintf(lexout, "%d\n", num);
 }
