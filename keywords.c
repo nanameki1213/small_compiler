@@ -24,7 +24,7 @@ int find_keywords(char *the_name)
 int enter_keywords(char *the_name, int the_value)
 {
   if (end_of_keywords >= MAX_KEYWORDS) {
-    error(ERROR_OVERFLOW, "keywords");
+    error(ERROR_OVERFLOW, "keywords", 0);
     return -1;
   }
 

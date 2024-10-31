@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#define ERROR_OVERFLOW 1
 #define MAX_KEYWORDS  20
 
 #define TOKEN_EOF	-1
@@ -42,6 +41,14 @@
 #define TOKEN_OR 270
 #define TOKEN_NOT 271
 
+#define MAX_ERRORCOUNT  10
+#define ERROR_OVERFLOW  1
+#define ERROR_SYNTAX    2
+#define ERROR_UNDEFINED 3
+#define ERROR_DOUBLE    4
+#define ERROR_TYPE      5
+#define ERROR_INTERNAL  6
+
 #define WHITESPACE  "\t\n "
 #define ALPHABET	"abcdefghijklmnopqrstuvwxyz"
 #define DIGIT		"0123456789"
@@ -55,6 +62,9 @@ extern keyword keywords[];
 extern char lexeme[];
 extern int token;
 
+extern int lineno;
+extern char lexvalue[];
+
 extern void get_token();
 extern void print_token();
 extern void convert(FILE *in, FILE *out);
@@ -63,4 +73,4 @@ extern int find_keywords(char *the_name);
 extern void setup_keywords();
 
 extern int char_pos(char *s, char c);
-extern void error(int type, char *hint);
+extern void error(int type, char *hint, int lineno);

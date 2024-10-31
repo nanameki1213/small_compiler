@@ -8,6 +8,11 @@ static FILE *lexin;
 static FILE *lexout;
 static char c;
 
+static int c_lineno = 1;
+int lineno;
+
+char lexvalue[BUFSIZ];
+
 int token;
 static int end_of_lexeme;
 char lexeme[BUFSIZ];
@@ -15,6 +20,9 @@ char lexeme[BUFSIZ];
 void get_char()
 {
 	c = fgetc(lexin);
+  if (c == '\n') {
+    c_lineno += 1;
+  }
 	return;
 }
 
@@ -29,6 +37,8 @@ void get_token()
   int i;
 
 state0:
+  lineno = c_lineno;
+
   end_of_lexeme = 0;
   if (char_pos(WHITESPACE, c) >= 0) {
     get_char();
@@ -400,6 +410,7 @@ void convert(FILE *in, FILE *out)
 	get_char();
 	get_token();
 	while (token != TOKEN_EOF) {
+    fprintf(lexout, "%d\t", lineno);
 		print_token();
 		get_token();
 	}
