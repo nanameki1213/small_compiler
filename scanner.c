@@ -17,6 +17,11 @@ int token;
 static int end_of_lexeme;
 char lexeme[BUFSIZ];
 
+void gen_code(char *op, char *opr)
+{
+  fprintf(lexout, "%-16s\t%s\n", op, opr);
+}
+
 void get_char()
 {
 	c = fgetc(lexin);
@@ -446,6 +451,7 @@ void convert(FILE *in, FILE *out)
   setup_keywords();
 	get_char();
 	get_token();
+  parse();
 	while (token != TOKEN_EOF) {
     fprintf(lexout, "%d\t", lineno);
 		print_token();

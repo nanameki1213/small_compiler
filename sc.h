@@ -74,3 +74,6 @@ extern void setup_keywords();
 
 extern int char_pos(char *s, char c);
 extern void error(int type, char *hint, int lineno);
+
+extern void gen_code(char *op, char *opr);
+extern void parse();
