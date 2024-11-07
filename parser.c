@@ -56,55 +56,64 @@ void parse_polynomial()
 {
   if (token == TOKEN_PLUS) {
     get_token();
+    parse_term();
   } else if (token == TOKEN_MINUS) {
     get_token();
+    parse_term();
     gen_code("neg", "-");
   } else {
-    ;
+    parse_term();
   }
-  parse_term();
   while (1) {
     if (token == TOKEN_PLUS) {
       get_token();
+      parse_term();
       gen_code("add", "-");
     } else if (token == TOKEN_MINUS) {
       get_token();
+      parse_term();
       gen_code("sub", "-");
     } else if (token == TOKEN_OR) {
       get_token();
+      parse_term();
       gen_code("or", "-");
     } else {
       break;
     }
-    parse_term();
   }
 }
 
 void parse_expression()
 {
+  int op;
   parse_polynomial();
   if (token == TOKEN_EQ) {
     get_token();
+    parse_polynomial();
     gen_code("eq", "-");
   } else if (token == TOKEN_NE) {
     get_token();
+    parse_polynomial();
     gen_code("ne", "-");
   } else if (token == TOKEN_LT) {
     get_token();
+    parse_polynomial();
     gen_code("lt", "-");
   } else if (token == TOKEN_LE) {
     get_token();
+    parse_polynomial();
     gen_code("le", "-");
   } else if (token == TOKEN_GT) {
     get_token();
+    parse_polynomial();
     gen_code("gt", "-");
   } else if (token == TOKEN_GE) {
     get_token();
+    parse_polynomial();
     gen_code("ge", "-");
   } else {
-    error(ERROR_SYNTAX, lexeme, lineno);
+    return;
   }
-  parse_polynomial();
 }
 
 void parse()

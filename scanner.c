@@ -453,8 +453,6 @@ void convert(FILE *in, FILE *out)
 	get_token();
   parse();
 	while (token != TOKEN_EOF) {
-    fprintf(lexout, "%d\t", lineno);
-		print_token();
-		get_token();
+    error(ERROR_SYNTAX, lexeme, lineno);
 	}
 }
