@@ -1,5 +1,5 @@
-sc	:	main.o scanner.o keywords.o misc.o parser.o
-	gcc -o sc main.o scanner.o keywords.o misc.o parser.o
+calc	:	main.o scanner.o keywords.o misc.o parser.o
+	gcc -o calc main.o scanner.o keywords.o misc.o parser.o
 
 main.o	:	main.c sc.h
 	gcc -c main.c
@@ -12,6 +12,6 @@ misc.o	:	misc.c sc.h
 parser.o	:	parser.c	sc.h
 	gcc -c parser.c
 clean	:	
-	rm sc *.o
+	rm calc *.o
 wc	:	
 	wc *.c
