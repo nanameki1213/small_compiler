@@ -1,4 +1,5 @@
 #include "sc.h"
+#include <math.h>
 
 void parse_factor();
 void parse_term();

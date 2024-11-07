@@ -48,11 +48,14 @@
 #define ERROR_DOUBLE    4
 #define ERROR_TYPE      5
 #define ERROR_INTERNAL  6
+#define ERROR_EXCEPTION 7
 
 #define WHITESPACE  "\t\n "
 #define ALPHABET	"abcdefghijklmnopqrstuvwxyz"
 #define DIGIT		"0123456789"
 #define HEXDIGIT  "0123456789abcdef"
+
+#define MAX_OPERANDS  32
 
 typedef struct {
   char *name;
@@ -77,3 +80,6 @@ extern void error(int type, char *hint, int lineno);
 
 extern void gen_code(char *op, char *opr);
 extern void parse();
+
+extern void push(int x);
+extern int pop();
