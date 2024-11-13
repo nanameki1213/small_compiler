@@ -85,7 +85,6 @@ void parse_polynomial()
 
 void parse_expression()
 {
-  int op;
   parse_polynomial();
   if (token == TOKEN_EQ) {
     get_token();
