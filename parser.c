@@ -1,4 +1,6 @@
 #include "sc.h"
+#include <stdatomic.h>
+#include <string.h>
 
 void parse_factor();
 void parse_term();
@@ -117,48 +119,72 @@ void parse_expression()
 
 void parse_statement()
 {
+  char id[BUFSIZ];
+  char label1[BUFSIZ];
+  char label2[BUFSIZ];
   if (token == TOKEN_ID) {
+    strcpy(id, lexeme);
     get_token();
     if (token == TOKEN_COLEQ) {
       get_token();
       parse_expression();
+      gen_code("store_id", id);
     } else if (token == TOKEN_COL) {
       get_token();
       parse_statement();
+      gen_code("label", id);
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
   } else if (token == TOKEN_IF) {
     get_token();
     parse_expression();
+    gen_code("tst", "-");
+    strcpy(label1, new_label());
+    gen_code("jeq", label1);
     if (token == TOKEN_THEN) {
       get_token();
       parse_statement();
       if (token == TOKEN_ELSE) {
+        strcpy(label2, new_label());
+        gen_code("jmp", label2);
+        gen_code("label", label1);
         get_token();
         parse_statement();
+        gen_code("label", label2);
       } else {
-        ;
+        gen_code("label", label1);
       }
     }
   } else if (token == TOKEN_WHILE) {
+    strcpy(label1, new_label());
+    gen_code("label", label1);
     get_token();
     parse_expression();
+    gen_code("tst", "-");
+    strcpy(label2, new_label());
+    gen_code("jeq", label2);
     if (token == TOKEN_DO) {
       get_token();
       parse_statement();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
+    gen_code("jmp", label1);
+    gen_code("label", label2);
   } else if (token == TOKEN_REPEAT) {
+    strcpy(label1, new_label());
+    gen_code("label", label1);
     get_token();
-    parse_expression();
+    parse_statement();
     if (token == TOKEN_UNTIL) {
       get_token();
       parse_expression();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
+    gen_code("tst", "-");
+    gen_code("jeq", label1);
   } else if (token == TOKEN_GOTO) {
     get_token();
     if (token == TOKEN_ID) {
@@ -166,6 +192,7 @@ void parse_statement()
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
+    gen_code("jmp", lexeme);
   } else if (token == TOKEN_BEGIN) {
     get_token();
     parse_statement();
