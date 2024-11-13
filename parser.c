@@ -116,6 +116,72 @@ void parse_expression()
   }
 }
 
+void parse_statement()
+{
+  if (token == TOKEN_ID) {
+    get_token();
+    if (token == TOKEN_COLEQ) {
+      get_token();
+      parse_expression();
+    } else if (token == TOKEN_COL) {
+      get_token();
+      parse_statement();
+    } else {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+  } else if (token == TOKEN_IF) {
+    get_token();
+    parse_expression();
+    if (token == TOKEN_THEN) {
+      get_token();
+      parse_statement();
+      if (token == TOKEN_ELSE) {
+        get_token();
+        parse_statement();
+      } else {
+        ;
+      }
+    }
+  } else if (token == TOKEN_WHILE) {
+    get_token();
+    parse_expression();
+    if (token == TOKEN_DO) {
+      get_token();
+      parse_statement();
+    } else {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+  } else if (token == TOKEN_REPEAT) {
+    get_token();
+    parse_expression();
+    if (token == TOKEN_UNTIL) {
+      get_token();
+      parse_expression();
+    } else {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+  } else if (token == TOKEN_GOTO) {
+    get_token();
+    if (token == TOKEN_ID) {
+      get_token();
+    } else {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+  } else if (token == TOKEN_BEGIN) {
+    get_token();
+    parse_statement();
+    while (token == TOKEN_SEMICOL) {
+      get_token();
+      parse_statement();
+    }
+    if (token == TOKEN_END) {
+      get_token();
+    }
+  } else {
+    error(ERROR_SYNTAX, lexeme, lineno); 
+  }
+}
+
 void parse()
 {
   parse_expression();
