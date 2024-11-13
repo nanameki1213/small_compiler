@@ -166,10 +166,10 @@ void parse_statement()
     gen_code("jeq", label2);
     if (token == TOKEN_DO) {
       get_token();
-      parse_statement();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
+    parse_statement();
     gen_code("jmp", label1);
     gen_code("label", label2);
   } else if (token == TOKEN_REPEAT) {
@@ -179,10 +179,10 @@ void parse_statement()
     parse_statement();
     if (token == TOKEN_UNTIL) {
       get_token();
-      parse_expression();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
+    parse_expression();
     gen_code("tst", "-");
     gen_code("jeq", label1);
   } else if (token == TOKEN_GOTO) {
