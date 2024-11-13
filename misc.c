@@ -1,7 +1,5 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include "sc.h"
 
 int char_pos(char *s, char c)
