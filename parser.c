@@ -122,20 +122,20 @@ void parse_variable()
   if (token == TOKEN_LONG) {
     get_token();
     if (token == TOKEN_ID) {
-      get_token();
       gen_code("var_long", lexeme);
+      get_token();
     }
   } else if (token == TOKEN_WORD) {
     get_token();
     if (token == TOKEN_ID) {
-      get_token();
       gen_code("var_word", lexeme);
+      get_token();
     }
   } else if (token == TOKEN_BYTE) {
     get_token();
     if (token == TOKEN_ID) {
-      get_token();
       gen_code("var_byte", lexeme);
+      get_token();
     }
   } else {
     error(ERROR_SYNTAX, lexeme, lineno);
@@ -229,14 +229,14 @@ void parse_statement()
       get_token();
     }
   } else {
-    error(ERROR_SYNTAX, lexeme, lineno); 
+    ;  
   }
 }
 
 void parse_program()
 {
   gen_code("start", "main");
-  while(1) {
+  while(token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
     parse_variable();
     if (token == TOKEN_COL) {
       get_token();
