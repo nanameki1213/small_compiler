@@ -117,6 +117,31 @@ void parse_expression()
   }
 }
 
+void parse_variable()
+{
+  if (token == TOKEN_LONG) {
+    get_token();
+    if (token == TOKEN_ID) {
+      get_token();
+      gen_code("var_long", lexeme);
+    }
+  } else if (token == TOKEN_WORD) {
+    get_token();
+    if (token == TOKEN_ID) {
+      get_token();
+      gen_code("var_word", lexeme);
+    }
+  } else if (token == TOKEN_BYTE) {
+    get_token();
+    if (token == TOKEN_ID) {
+      get_token();
+      gen_code("var_byte", lexeme);
+    }
+  } else {
+    error(ERROR_SYNTAX, lexeme, lineno);
+  }
+}
+
 void parse_statement()
 {
   char id[BUFSIZ];
@@ -207,7 +232,6 @@ void parse_statement()
     error(ERROR_SYNTAX, lexeme, lineno); 
   }
 }
-
 void parse()
 {
   parse_expression();
