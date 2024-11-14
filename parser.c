@@ -156,8 +156,8 @@ void parse_statement()
       gen_code("store_id", id);
     } else if (token == TOKEN_COL) {
       get_token();
-      parse_statement();
       gen_code("label", id);
+      parse_statement();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
@@ -213,11 +213,11 @@ void parse_statement()
   } else if (token == TOKEN_GOTO) {
     get_token();
     if (token == TOKEN_ID) {
+      gen_code("jmp", lexeme);
       get_token();
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
-    gen_code("jmp", lexeme);
   } else if (token == TOKEN_BEGIN) {
     get_token();
     parse_statement();

@@ -1,3 +1,1 @@
-long a;
-word b;
-byte c: 0xfffbc;
+loop:
