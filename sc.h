@@ -77,3 +77,5 @@ extern void error(int type, char *hint, int lineno);
 
 extern void gen_code(char *op, char *opr);
 extern void parse();
+
+extern char *new_label();

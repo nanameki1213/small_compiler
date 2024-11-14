@@ -38,3 +38,12 @@ void error(int type, char *hint, int lineno)
 		fprintf(stderr, "error: Unknown error.\n");
 	}
 }
+
+char *new_label()
+{
+  static char newname[BUFSIZ];
+  static int count = 0;
+
+  sprintf(newname, "L%04d", count++);
+  return newname;
+}

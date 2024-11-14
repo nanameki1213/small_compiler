@@ -232,7 +232,33 @@ void parse_statement()
     error(ERROR_SYNTAX, lexeme, lineno); 
   }
 }
+
+void parse_program()
+{
+  gen_code("start", "main");
+  while(1) {
+    parse_variable();
+    if (token == TOKEN_COL) {
+      get_token();
+      if (token == TOKEN_NUM) {
+        gen_code("set_address", lexvalue);
+        get_token();
+      } else {
+        error(ERROR_SYNTAX, "expect num", lineno);
+      }
+    } else {
+      ;
+    }
+    if (token == TOKEN_SEMICOL) {
+      get_token();
+    }
+  }
+  gen_code("label", "main");
+  parse_statement();
+  gen_code("end", "-");
+}
+
 void parse()
 {
-  parse_expression();
+  parse_program();
 }
