@@ -17,6 +17,40 @@ int token;
 static int end_of_lexeme;
 char lexeme[BUFSIZ];
 
+void intel_syntax(char *op, char *opr)
+{
+  if (strcmp(op, "load_num") == 0) {
+    push(atoi(opr));
+  } else if (strcmp(op, "neg") == 0) {
+    int x = pop();
+    push(-x);
+  } else if (strcmp(op, "add") == 0) {
+    int rs = pop();
+    int rd = pop();
+    push(rs + rd);
+  } else if (strcmp(op, "sub") == 0) {
+    int rs = pop();
+    int rd = pop();
+    push(rd - rs);
+  } else if (strcmp(op, "mul") == 0) {
+    int rs = pop();
+    int rd = pop();
+ 
+    push(rs * rd);
+  } else if (strcmp(op, "div") == 0) {
+    int rs = pop();
+    int rd = pop();
+    if(rd == 0) {
+      error(ERROR_EXCEPTION, "gen_code: divide 0", 0);
+      return;
+    }
+    push(rd / rs);
+  } else {
+    error(ERROR_INTERNAL, "gen_code", 0);
+  }
+
+}
+
 void gen_code(char *op, char *opr)
 {
   fprintf(stdout, "%-16s\t%s\n", op, opr);
