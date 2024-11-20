@@ -79,3 +79,5 @@ extern void gen_code(char *op, char *opr);
 extern void parse();
 
 extern char *new_label();
+
+extern void convert2(FILE *in, FILE *out);
