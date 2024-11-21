@@ -49,7 +49,7 @@ void encode_constants(FILE *out)
 
   fprintf(out, "\t\t.align\t\t2\n");
   for (i = 0; i < end_of_constants; i++) {
-    fprintf(out, "%s\t\t.data.l\t\tJ'%08X\n",
+    fprintf(out, "%s\t\t.data.l\t\tH'%08X\n",
             constants[i].label, atoi(constants[i].value));
   }
 }

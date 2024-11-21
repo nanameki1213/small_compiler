@@ -99,6 +99,7 @@ extern void encode_constants(FILE *out);
 #define TYPE_WORD 2
 #define TYPE_BYTE 3
 #define OFFSET_AUTO -1
+#define UNDEFINED -1
 
 typedef struct {
   char *label;
