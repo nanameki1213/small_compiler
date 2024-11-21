@@ -113,3 +113,5 @@ extern int find_symbols(char *label);
 extern int enter_symbols(char *label, int type);
 extern void setup_symbols();
 extern void encode_symbols(FILE *out);
+
+extern int m_option;

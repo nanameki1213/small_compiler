@@ -5,9 +5,13 @@
 static FILE *codein;
 static FILE *codeout;
 
+extern int m_option;
+
 void encode(char *op, char *opr)
 {
-  // fprintf(codeout, "; %-16s\t%s\n", op, opr);
+  if (m_option == 1) {
+    fprintf(codeout, "; %-16s\t%s\n", op, opr);
+  }
   int current_id;
   if (strcmp(op, "start") == 0) {
     fprintf(codeout, "\t\t.cpu\t\t300HA\n");

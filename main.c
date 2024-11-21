@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "sc.h"
+
+int m_option;
 
 int main(int argc, char *argv[])
 {
@@ -9,25 +12,36 @@ int main(int argc, char *argv[])
 	FILE *out;
   FILE *tmp;
 
-	if (argc == 3) {
-		if ((in = fopen(argv[1], "r")) == NULL) {
-			perror("fopen for input");
-			exit(1);
-		}
-		if ((out = fopen(argv[2], "w")) == NULL) {
-			perror("fopen for output");
-			exit(1);
-		}
-	} else if (argc == 2) {
-		if ((in = fopen(argv[1], "r")) == NULL) {
-			perror("fopen for input");
-			exit(1);
-		}
-		out = stdout;
-	} else {
-		fprintf(stderr, "use: %s input [output]\n", argv[0]);
-		exit(1);
-	}
+  // オプションの解析
+  out = stdout;
+  m_option = 0;
+  int c;
+  while ((c = getopt(argc, argv, "mo:")) != -1) {
+    switch (c) {
+      case 'm':
+        m_option = 1;
+        break;
+      case 'o':
+        if ((out = fopen(optarg, "w")) == NULL) {
+          perror("fopen out_file");
+          exit(1);
+        }
+        break;
+    }
+  }
+  
+  if (optind < argc) {
+    if ((in = fopen(argv[optind], "r")) == NULL) {
+      perror("fopen in_file");
+      exit(1);
+    }
+    optind += 1;
+  }
+
+  if (optind < argc) {
+    fprintf(stderr, "use: %s [-m] in_file [out_file]\n", argv[0]);
+    exit(1);
+  }
 
   if ((tmp = tmpfile()) == NULL) {
     perror("fopen for tmpfile");
