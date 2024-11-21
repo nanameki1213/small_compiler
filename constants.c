@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "sc.h"
 
@@ -21,6 +22,11 @@ int find_constants(char *value)
 
 int enter_constants(char *value)
 {
+  int i;
+  if ((i = find_constants(value)) >= 0) {
+    return i;
+  }
+
   if (end_of_constants >= MAX_CONSTANTS) {
     error(ERROR_OVERFLOW, "constants", 0);
     return -1;
