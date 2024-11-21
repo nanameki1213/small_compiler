@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #define MAX_KEYWORDS  20
+#define MAX_CONSTANTS 1024
 
 #define TOKEN_EOF	-1
 #define TOKEN_ERROR	0
@@ -81,3 +82,14 @@ extern void parse();
 extern char *new_label();
 
 extern void convert2(FILE *in, FILE *out);
+
+typedef struct {
+  char *value;
+  char *label;
+} constant;
+extern constant constants[];
+
+extern int find_constants(char *value);
+extern int enter_constants(char *value);
+extern void setup_constants();
+extern void encode_constants(FILE *out);
