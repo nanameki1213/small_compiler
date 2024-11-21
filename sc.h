@@ -5,6 +5,7 @@
 
 #define MAX_KEYWORDS  20
 #define MAX_CONSTANTS 1024
+#define MAX_SYMBOLS   1024
 
 #define TOKEN_EOF	-1
 #define TOKEN_ERROR	0
@@ -93,3 +94,21 @@ extern int find_constants(char *value);
 extern int enter_constants(char *value);
 extern void setup_constants();
 extern void encode_constants(FILE *out);
+
+#define TYPE_LONG 1
+#define TYPE_WORD 2
+#define TYPE_BYTE 3
+#define OFFSET_AUTO -1
+
+typedef struct {
+  char *label;
+  int type;
+  int size;
+  int offset;
+} symbol;
+extern symbol symbols[];
+
+extern int find_symbols(char *label);
+extern int enter_symbols(char *label, int type);
+extern void setup_symbols();
+extern void encode_symbols(FILE *out);
