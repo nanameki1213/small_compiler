@@ -21,10 +21,12 @@
 #define TOKEN_LPAR 12
 #define TOKEN_RPAR 13
 #define TOKEN_PLUS 14
-#define TOKEN_MINUS 15
-#define TOKEN_ASTER 16
-#define TOKEN_SLASH 17
-#define TOKEN_COMMA 18
+#define TOKEN_RSQR  15
+#define TOKEN_LSQR  16
+#define TOKEN_MINUS 17
+#define TOKEN_ASTER 18
+#define TOKEN_SLASH 19
+#define TOKEN_COMMA 20
 #define TOKEN_IF 256
 #define TOKEN_THEN 257
 #define TOKEN_ELSE 258

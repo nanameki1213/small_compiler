@@ -25,9 +25,24 @@ void parser_factor()
         error(ERROR_SYNTAX, lexeme, lineno);
       }
       get_token();
+
+      fprintf(lexout, "%s ", id);
+    } else if (token == TOKEN_LSQR) {
+      get_token();
+      fprintf(lexout, "&%s ", id);
+      parse_expression();
+      if (token == TOKEN_RSQR) {
+        get_token();
+      } else {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      fprintf(lexout, "# ");
+    } else {
+      fprintf(lexout, "%s ", lexeme);
     }
+
+
     // gen_code("load_id", lexeme);
-    fprintf(lexout, "%s ", id);
   } else if (token == TOKEN_NUM) {
     // gen_code("load_num", lexvalue);
     fprintf(lexout, "%s ", lexvalue);
@@ -108,27 +123,33 @@ void parse_expression()
   if (token == TOKEN_EQ) {
     get_token();
     parse_polynomial();
-    gen_code("eq", "-");
+    // gen_code("eq", "-");
+    fprintf(lexout, "= ");
   } else if (token == TOKEN_NE) {
     get_token();
     parse_polynomial();
-    gen_code("ne", "-");
+    // gen_code("ne", "-");
+    fprintf(lexout, "<> ");
   } else if (token == TOKEN_LT) {
     get_token();
     parse_polynomial();
-    gen_code("lt", "-");
+    // gen_code("lt", "-");
+    fprintf(lexout, "< ");
   } else if (token == TOKEN_LE) {
     get_token();
     parse_polynomial();
-    gen_code("le", "-");
+    // gen_code("le", "-");
+    fprintf(lexout, "<=");
   } else if (token == TOKEN_GT) {
     get_token();
     parse_polynomial();
-    gen_code("gt", "-");
+    // gen_code("gt", "-");
+    fprintf(lexout, "> ");
   } else if (token == TOKEN_GE) {
     get_token();
     parse_polynomial();
-    gen_code("ge", "-");
+    // gen_code("ge", "-");
+    fprintf(lexout, "<=");
   } else {
     return;
   }

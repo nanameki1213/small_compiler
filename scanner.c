@@ -120,6 +120,16 @@ state0:
     get_char();
     token = TOKEN_COMMA;
     goto final;
+  } else if (c == '[') {
+    save_char(c);
+    get_char();
+    token = TOKEN_LSQR;
+    goto final;
+  } else if (c == ']') {
+    save_char(c);
+    get_char();
+    token = TOKEN_RSQR;
+    goto final;
   } else if (c == EOF) {
     token = TOKEN_EOF;
     goto final;
