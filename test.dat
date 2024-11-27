@@ -1,1 +1,2 @@
-loop:
+(a + b) * c + sin(d) / 20;
+arctan(a, b) / cos(-c + d);

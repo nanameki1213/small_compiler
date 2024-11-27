@@ -3,7 +3,7 @@
 #include "sc.h"
 
 static FILE *lexin;
-static FILE *lexout;
+FILE *lexout;
 static char c;
 
 static int c_lineno = 1;
@@ -449,8 +449,9 @@ void convert(FILE *in, FILE *out)
   setup_keywords();
 	get_char();
 	get_token();
-  parse();
 	while (token != TOKEN_EOF) {
-    error(ERROR_SYNTAX, lexeme, lineno);
+    parse();
+    get_token();
+    fprintf(out, "\n");
 	}
 }
