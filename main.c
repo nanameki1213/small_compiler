@@ -36,9 +36,7 @@ int main(int argc, char *argv[])
       exit(1);
     }
     optind += 1;
-  }
-
-  if (optind < argc) {
+  } else {
     fprintf(stderr, "use: %s [-m] in_file [out_file]\n", argv[0]);
     exit(1);
   }
