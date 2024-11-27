@@ -17,9 +17,14 @@ void parser_factor()
     if (token == TOKEN_LPAR) {
       get_token();
       parse_expression();
-      if (token == TOKEN_RPAR) {
+      while (token == TOKEN_COMMA) {
         get_token();
-      } else if (token == token)
+        parse_expression();
+      }
+      if (token != TOKEN_RPAR) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
     }
     // gen_code("load_id", lexeme);
     fprintf(lexout, "%s ", id);
