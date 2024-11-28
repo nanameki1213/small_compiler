@@ -145,9 +145,11 @@ state2:
   } else if (c == EOF) {
     goto state0;
   } else if (c == ')') {
-    get_char();
-    end_of_lexeme = 0;
-    goto state0;
+    save_char(c);
+    get_char(c);
+    //end_of_lexeme = 0;
+    token = TOKEN_COMMENT;
+    goto final;
   } else {
     save_char(c);
     get_char();
@@ -451,8 +453,12 @@ void convert(FILE *in, FILE *out)
   setup_keywords();
 	get_char();
 	get_token();
-  parse();
+  //parse();
 	while (token != TOKEN_EOF) {
-    error(ERROR_SYNTAX, lexeme, lineno);
+    if (token == TOKEN_COMMENT) {
+      fprintf(out, "%s\n", lexeme);
+    }
+    get_token();
+    // error(ERROR_SYNTAX, lexeme, lineno);
 	}
 }

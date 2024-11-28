@@ -40,6 +40,7 @@
 #define TOKEN_AND 269
 #define TOKEN_OR 270
 #define TOKEN_NOT 271
+#define TOKEN_COMMENT 272
 
 #define MAX_ERRORCOUNT  10
 #define ERROR_OVERFLOW  1
