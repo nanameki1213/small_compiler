@@ -38,7 +38,7 @@ void parse_factor()
       }
       fprintf(lexout, "# ");
     } else {
-      fprintf(lexout, "%s ", lexeme);
+      fprintf(lexout, "%s ", id);
     }
 
 
