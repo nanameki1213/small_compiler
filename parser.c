@@ -9,7 +9,7 @@ void parse_term();
 void parse_polynomial();
 void parse_expression();
 
-void parser_factor()
+void parse_factor()
 {
   if (token == TOKEN_ID) {
     char *id = strdup(lexeme);
@@ -57,7 +57,7 @@ void parser_factor()
     }
   } else if (token == TOKEN_NOT) {
     get_token();
-    parser_factor();
+    parse_factor();
     fprintf(lexout, "not ");
   } else {
     error(ERROR_SYNTAX, lexeme, lineno);
@@ -66,19 +66,19 @@ void parser_factor()
 
 void parse_term()
 {
-  parser_factor();
+  parse_factor();
   while (1) {
     if (token == TOKEN_ASTER) {
       get_token();
-      parser_factor();
+      parse_factor();
       fprintf(lexout, "* ");
     } else if (token == TOKEN_SLASH) {
       get_token();
-      parser_factor();
+      parse_factor();
       fprintf(lexout, "/ ");
     } else if (token == TOKEN_AND) {
       get_token();
-      parser_factor();
+      parse_factor();
       fprintf(lexout, "and ");
     } else {
       break;
