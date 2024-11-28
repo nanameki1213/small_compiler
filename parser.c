@@ -7,7 +7,7 @@ void parse_term();
 void parse_polynomial();
 void parse_expression();
 
-void parser_factor()
+void parse_factor()
 {
   if (token == TOKEN_ID) {
     gen_code("load_id", lexeme);
@@ -25,7 +25,7 @@ void parser_factor()
     }
   } else if (token == TOKEN_NOT) {
     get_token();
-    parser_factor();
+    parse_factor();
     gen_code("not", "-");
   } else {
     error(ERROR_SYNTAX, lexeme, lineno);
@@ -34,19 +34,19 @@ void parser_factor()
 
 void parse_term()
 {
-  parser_factor();
+  parse_factor();
   while (1) {
     if (token == TOKEN_ASTER) {
       get_token();
-      parser_factor();
+      parse_factor();
       gen_code("mul", "-");
     } else if (token == TOKEN_SLASH) {
       get_token();
-      parser_factor();
+      parse_factor();
       gen_code("div", "-");
     } else if (token == TOKEN_AND) {
       get_token();
-      parser_factor();
+      parse_factor();
       gen_code("and", "-");
     } else {
       break;
