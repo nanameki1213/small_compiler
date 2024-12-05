@@ -5,7 +5,51 @@
 static FILE *codein;
 static FILE *codeout;
 
+static int idle_sp = -1;
+static char *idle[BUFSIZ];
+
+static int inuse_sp = -1;
+static char *inuse[BUFSIZ];
+
 extern int m_option;
+
+void push_idle(char *r)
+{
+  idle[++idle_sp] = r;
+}
+
+char *pop_idle()
+{
+  char *r;
+
+  if (idle_sp >= 0) {
+    r = idle[idle_sp--];
+  } else {
+    r = NULL;
+    error(ERROR_INTERNAL, "pop_idle", 0);
+  }
+
+  return r;
+}
+
+void push_inuse(char *r)
+{
+  inuse[++inuse_sp] = r;
+}
+
+char *pop_inuse()
+{
+  char *r;
+
+  if (inuse_sp >= 0) {
+    r = inuse[inuse_sp--];
+  } else {
+    r = NULL;
+    error(ERROR_INTERNAL, "pop_inuse", 0);
+  }
+
+  return r;
+}
 
 void encode(char *op, char *opr)
 {
@@ -61,4 +105,60 @@ void convert2(FILE *in, FILE *out)
   while (fscanf(codein, "%s %s", op, opr) != EOF) {
     encode(op, opr);
   }
+}
+
+char *ER2R(char *er)
+{
+  char *r;
+
+  if (strcmp(er, "ER0") == 0) {
+    r = "R0";
+  } else if (strcmp(er, "ER1") == 0) {
+    r = "R1";
+  } else if (strcmp(er, "ER2") == 0) {
+    r = "R2";
+  } else if (strcmp(er, "ER3") == 0) {
+    r = "R3";
+  } else if (strcmp(er, "ER4") == 0) {
+    r = "R4";
+  } else if (strcmp(er, "ER5") == 0) {
+    r = "R5";
+  } else if (strcmp(er, "ER6") == 0) {
+    r = "R6";
+  } else if (strcmp(er, "ER7") == 0) {
+    r = "R7";
+  } else {
+    error(ERROR_INTERNAL, "ER2R", 0);
+    r = NULL;
+  }
+
+  return r;
+}
+
+char *ER2RL(char *er)
+{
+  char *rl;
+
+  if (strcmp(er, "ER0") == 0) {
+    rl = "R0L";
+  } else if (strcmp(er, "ER1") == 0) {
+    rl = "R1L";
+  } else if (strcmp(er, "ER2") == 0) {
+    rl = "R2L";
+  } else if (strcmp(er, "ER3") == 0) {
+    rl = "R3L";
+  } else if (strcmp(er, "ER4") == 0) {
+    rl = "R4L";
+  } else if (strcmp(er, "ER5") == 0) {
+    rl = "R5L";
+  } else if (strcmp(er, "ER6") == 0) {
+    rl = "R6L";
+  } else if (strcmp(er, "ER7") == 0) {
+    rl = "R7L";
+  } else {
+    error(ERROR_INTERNAL, "ER2R", 0);
+    rl = NULL;
+  }
+
+  return rl;
 }
