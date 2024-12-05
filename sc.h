@@ -52,7 +52,7 @@
 #define ERROR_INTERNAL  6
 
 #define WHITESPACE  "\t\n "
-#define ALPHABET	"abcdefghijklmnopqrstuvwxyz"
+#define ALPHABET	"abcdefghijklmnopqrstuvwxyz_"
 #define DIGIT		"0123456789"
 #define HEXDIGIT  "0123456789abcdef"
 
