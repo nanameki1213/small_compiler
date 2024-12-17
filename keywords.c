@@ -50,4 +50,6 @@ void setup_keywords()
   enter_keywords("and", TOKEN_AND);
   enter_keywords("or", TOKEN_OR);
   enter_keywords("not", TOKEN_NOT);
+  enter_keywords("function", TOKEN_FUNCTION);
+  enter_keywords("return", TOKEN_RETURN);
 }

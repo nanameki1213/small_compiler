@@ -120,6 +120,11 @@ state0:
     get_char();
     token = TOKEN_SEMICOL;
     goto final;
+  } else if (c == ',') {
+    save_char(c);
+    get_char();
+    token = TOKEN_COMMA;
+    goto final;
   } else if (c == EOF) {
     token = TOKEN_EOF;
     goto final;
@@ -480,6 +485,12 @@ void print_token()
     fprintf(lexout, "OR\t[%s]\n", lexeme);
   } else if (token == TOKEN_NOT) {
     fprintf(lexout, "NOT\t[%s]\n", lexeme);
+  } else if (token == TOKEN_FUNCTION) {
+    fprintf(lexout, "FUNCTION\t[%s]\n", lexeme);
+  } else if (token == TOKEN_RETURN) {
+    fprintf(lexout, "RETURN\t[%s]\n", lexeme);
+  } else if (token == TOKEN_COMMA) {
+    fprintf(lexout, "COMMA\t[%s]\n", lexeme);
   } else {
     fprintf(lexout, "print_token: Unknown token.\n");
   }
