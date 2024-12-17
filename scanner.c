@@ -105,6 +105,11 @@ state0:
     get_char();
     token = TOKEN_ASTER;
     goto final;
+  } else if (c == '%') {
+    save_char(c);
+    get_char();
+    token = TOKEN_PERCENT;
+    goto final;
   } else if (c == '/') {
     save_char(c);
     get_char();
@@ -195,6 +200,10 @@ state5:
     value = i;
     get_char();
     goto state8;
+  } else if (c == 'b') {
+    save_char(c);
+    get_char();
+    goto state16;
   } else {
     token = TOKEN_NUM;
     sprintf(lexvalue, "%d", value);
@@ -324,6 +333,11 @@ state13:
     get_char();
     token = TOKEN_NE;
     goto final;
+  } else if (c == '<') {
+    save_char(c);
+    get_char();
+    token = TOKEN_SHIFTL;
+    goto final;
   } else {
     token = TOKEN_LT;
     goto final;
@@ -339,6 +353,11 @@ state14:
     save_char(c);
     get_char();
     token = TOKEN_NE;
+    goto final;
+  } else if (c == '>') {
+    save_char(c);
+    get_char();
+    token = TOKEN_SHIFTR;
     goto final;
   } else {
     token = TOKEN_GT;
@@ -358,6 +377,30 @@ state15:
     goto final;
   } else {
     token = TOKEN_EQ;
+    goto final;
+  }
+
+state16:
+  if ((i = char_pos(BINDIGIT, tolower(c))) >= 0) {
+    save_char(c);
+    value = i;
+    get_char();
+    goto state17;
+  } else {
+    get_char();
+    token = TOKEN_ERROR;
+    goto final;
+  }
+
+state17:
+  if ((i = char_pos(BINDIGIT, tolower(c))) >= 0) {
+    save_char(c);
+    value = value * 2 + i;
+    get_char();
+    goto state17;
+  } else {
+    token = TOKEN_NUM;
+    sprintf(lexvalue, "%d", value);
     goto final;
   }
 

@@ -81,6 +81,35 @@ char *ER2R(char *er)
   return r;
 }
 
+char *ER2E(char *er)
+{
+  char *e;
+
+  if (strcmp(er, "ER0") == 0) {
+    e = "E0";
+  } else if (strcmp(er, "ER1") == 0) {
+    e = "E1";
+  } else if (strcmp(er, "ER2") == 0) {
+    e = "E2";
+  } else if (strcmp(er, "ER3") == 0) {
+    e = "E3";
+  } else if (strcmp(er, "ER4") == 0) {
+    e = "E4";
+  } else if (strcmp(er, "ER5") == 0) {
+    e = "E5";
+  } else if (strcmp(er, "ER6") == 0) {
+    e = "E6";
+  } else if (strcmp(er, "ER7") == 0) {
+    e = "E7";
+  } else {
+    error(ERROR_INTERNAL, "ER2R", 0);
+    e = NULL;
+  }
+
+  return e;
+}
+
+
 char *ER2RL(char *er)
 {
   char *rl;
@@ -197,7 +226,6 @@ void encode(char *op, char *opr)
     fprintf(codeout, "\t\tmulxs.w\t\t%s,%s\n", ER2R(r0), r1);
     push_inuse(r1);
     push_idle(r0);
-
   } else if (strcmp(op, "div") == 0) {
     r0 = pop_inuse();
     r1 = pop_inuse();
@@ -205,6 +233,14 @@ void encode(char *op, char *opr)
     fprintf(codeout, "\t\texts.l\t\t%s\n", r1);
     push_inuse(r1);
     push_idle(r0);
+  } else if (strcmp(op, "mod") == 0) {
+    r0 = pop_inuse();
+    r1 = pop_inuse();
+    fprintf(codeout, "\t\tdivxs.w\t\t%s,%s\n", ER2R(r0), r1);
+    fprintf(codeout, "\t\tmov.w\t\t%s,%s\n", ER2E(r1), ER2R(r1));
+    fprintf(codeout, "\t\texts.l\t\t%s\n", r1);
+    push_inuse(r1);
+    push_idle(r1);
   } else if (strcmp(op, "and") == 0) {
     r0 = pop_inuse();
     r1 = pop_inuse();
@@ -217,6 +253,31 @@ void encode(char *op, char *opr)
     fprintf(codeout, "\t\tadd.l\t\t%s,%s\n", r0, r1);
     push_inuse(r1);
     push_idle(r0);
+  } else if (strcmp(op, "shiftl") == 0) {
+    r0 = pop_inuse();
+    r1 = pop_inuse();
+    strcpy(label1, new_label());
+    strcpy(label2, new_label());
+    fprintf(codeout, "%s:\t\tdec.l\t\t#1,%s\n",label1, r0);
+    fprintf(codeout, "\t\tbmi\t\t%s\n", label2);
+    fprintf(codeout, "\t\tshal.l\t\t%s\n", r1);
+    fprintf(codeout, "\t\tbra\t\t%s\n", label1);
+    fprintf(codeout, "%s\t\t.equ\t\t$\n", label2);
+    push_inuse(r1);
+    push_idle(r0);
+  } else if (strcmp(op, "shiftr") == 0) {
+    r0 = pop_inuse();
+    r1 = pop_inuse();
+    strcpy(label1, new_label());
+    strcpy(label2, new_label());
+    fprintf(codeout, "%s:\t\tdec.l\t\t#1,%s\n",label1, r0);
+    fprintf(codeout, "\t\tbmi\t\t%s\n", label2);
+    fprintf(codeout, "\t\tshar.l\t\t%s\n", r1);
+    fprintf(codeout, "\t\tbra\t\t%s\n", label1);
+    fprintf(codeout, "%s\t\t.equ\t\t$\n", label2);
+    push_inuse(r1);
+    push_idle(r0);
+
   } else if (strcmp(op, "sub") == 0) {
     r0 = pop_inuse();
     r1 = pop_inuse();

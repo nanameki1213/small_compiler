@@ -42,6 +42,9 @@
 #define TOKEN_AND 269
 #define TOKEN_OR 270
 #define TOKEN_NOT 271
+#define TOKEN_PERCENT 272
+#define TOKEN_SHIFTL  273
+#define TOKEN_SHIFTR  274
 
 #define MAX_ERRORCOUNT  10
 #define ERROR_OVERFLOW  1
@@ -55,6 +58,7 @@
 #define ALPHABET	"abcdefghijklmnopqrstuvwxyz_"
 #define DIGIT		"0123456789"
 #define HEXDIGIT  "0123456789abcdef"
+#define BINDIGIT  "01"
 
 typedef struct {
   char *name;

@@ -40,6 +40,10 @@ void parse_term()
       get_token();
       parse_factor();
       gen_code("mul", "-");
+    } else if (token == TOKEN_PERCENT) {
+      get_token();
+      parse_factor();
+      gen_code("mod", "-");
     } else if (token == TOKEN_SLASH) {
       get_token();
       parse_factor();
@@ -48,6 +52,14 @@ void parse_term()
       get_token();
       parse_factor();
       gen_code("and", "-");
+    } else if (token == TOKEN_SHIFTL) {
+      get_token();
+      parse_factor();
+      gen_code("shiftl", "-");
+    } else if (token == TOKEN_SHIFTR) {
+      get_token();
+      parse_factor();
+      gen_code("shiftr", "-");
     } else {
       break;
     }
