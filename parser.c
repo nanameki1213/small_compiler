@@ -189,6 +189,9 @@ void parse_statement()
   char id[BUFSIZ];
   char label1[BUFSIZ];
   char label2[BUFSIZ];
+  int args;
+  int i;
+
   if (token == TOKEN_ID) {
     strcpy(id, lexeme);
     get_token();
@@ -200,6 +203,30 @@ void parse_statement()
       get_token();
       gen_code("label", id);
       parse_statement();
+    } else if (token == TOKEN_LPAR) {
+      get_token();
+      args = 0;
+      parse_expression();
+      gen_code("store_arg", "-");
+      args += 1;
+      while (token == TOKEN_COMMA) {
+        get_token();
+        parse_expression();
+        // TODO:parse_expressionで引数があるかどうかがわからない
+        gen_code("store_arg", "-");
+        args += 1;
+      }
+      if (token != TOKEN_RPAR) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
+      gen_code("load_num", "0");
+      gen_code("store_arg", "-");
+      gen_code("call", id);
+      gen_code("cancel_arg", "-");
+      for (i = 0; i < args; i++) {
+        gen_code("cancel_arg", "-");
+      }
     } else {
       error(ERROR_SYNTAX, lexeme, lineno);
     }
@@ -270,8 +297,45 @@ void parse_statement()
     if (token == TOKEN_END) {
       get_token();
     }
+  } else if (token == TOKEN_RETURN) {
+    get_token();
+    parse_expression();
+    gen_code("store_id", "ans");
+    gen_code("return", "-");
   } else {
     ;  
+  }
+}
+
+void parse_function()
+{
+  if (token == TOKEN_FUNCTION) {
+    get_token();
+    if (token == TOKEN_ID) {
+      get_token();
+      gen_code("start_func", lexeme);
+      if (token == TOKEN_LPAR) {
+        parse_variable();
+        while (token == TOKEN_COMMA) {
+          get_token();
+          parse_variable();
+        }
+        if (token != TOKEN_RPAR) {
+          error(ERROR_SYNTAX, lexeme, lineno);
+        } else {
+          get_token();
+        }
+        gen_code("start_prologue", "-");
+        parse_variable();
+        while (token == TOKEN_SEMICOL) {
+          get_token();
+          parse_variable();
+        }
+        gen_code("end_prologue", "-");
+        parse_statement();
+        gen_code("end_func", "-");
+      }
+    }
   }
 }
 
@@ -291,6 +355,11 @@ void parse_program()
     } else {
       ;
     }
+    if (token == TOKEN_SEMICOL) {
+      get_token();
+    }
+
+    parse_function();
     if (token == TOKEN_SEMICOL) {
       get_token();
     }

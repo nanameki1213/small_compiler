@@ -111,10 +111,16 @@ extern void encode_constants(FILE *out);
 typedef struct {
   char *label;
   int type;
+  int level;
   int size;
   int offset;
 } symbol;
 extern symbol symbols[];
+
+extern void frame_start();
+extern void frame_end();
+extern int frame_size();
+extern void frame_cancel();
 
 extern int find_symbols(char *label);
 extern int enter_symbols(char *label, int type);

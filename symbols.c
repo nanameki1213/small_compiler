@@ -3,8 +3,9 @@
 #include "sc.h"
 
 symbol symbols[MAX_SYMBOLS];
-
 static int end_of_symbols;
+static int level;
+static int frame_base;
 
 int find_symbols(char *label)
 {
