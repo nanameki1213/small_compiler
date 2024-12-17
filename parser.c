@@ -10,8 +10,38 @@ void parse_expression();
 void parse_factor()
 {
   if (token == TOKEN_ID) {
+    char id[BUFSIZ];
+    int args;
+    int i;
     gen_code("load_id", lexeme);
     get_token();
+    strcpy(id, lexeme);
+    if (token == TOKEN_LPAR) {
+      args = 0;
+      get_token();
+      parse_expression();
+      gen_code("store_arg", "-");
+      args += 1;
+      while (token == TOKEN_COMMA) {
+        get_token();
+        parse_expression();
+        gen_code("store_arg", "-");
+        args += 1;
+      }
+      if (token != TOKEN_RPAR) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
+      gen_code("load_num", "0");
+      gen_code("store_arg", "-");
+      gen_code("call", id);
+      gen_code("load_arg", "-");
+      for (i = 0; i < args; i++) {
+        gen_code("cancel_arg", "-");
+      }
+    } else {
+      gen_code("load_id", id);
+    }
   } else if (token == TOKEN_NUM) {
     gen_code("load_num", lexvalue);
     get_token();
