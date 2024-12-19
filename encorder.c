@@ -146,6 +146,7 @@ void encode(char *op, char *opr)
   int i;
   char *r0, *r1;
   char label1[BUFSIZ], label2[BUFSIZ];
+  char label_return[BUFSIZ];
 
   if (strcmp(op, "start") == 0) {
     fprintf(codeout, "\t\t.cpu\t\t300HA\n");
@@ -162,6 +163,71 @@ void encode(char *op, char *opr)
     fprintf(codeout, "\t\t.end\n");
   } else if (strcmp(op, "label") == 0) {
     fprintf(codeout, "%s\t\t.equ\t\t$\n", opr);
+  } else if (strcmp(op, "start_func") == 0) {
+    fprintf(codeout, "%s\t\t.equ\t\t$\n", opr);
+    strcpy(label_return, new_label());
+    frame_start();
+  } else if (strcmp(op, "start_prologue") == 0) {
+    enter_symbols("ans", TYPE_LONG);
+    enter_symbols("pc", TYPE_LONG);
+    enter_symbols("fp", TYPE_LONG);
+    enter_symbols("er5", TYPE_LONG);
+    enter_symbols("er4", TYPE_LONG);
+    enter_symbols("er3", TYPE_LONG);
+    enter_symbols("er2", TYPE_LONG);
+    enter_symbols("er1", TYPE_LONG);
+    enter_symbols("er0", TYPE_LONG);
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER6");
+    fprintf(codeout, "\t\tmov.l\t\t%s,%s\n", "ER7", "ER6");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER5");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER4");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER3");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER2");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER1");
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", "ER0");
+    push_idle("ER5");
+    push_idle("ER4");
+    push_idle("ER3");
+    push_idle("ER2");
+    push_idle("ER1");
+    push_idle("ER0");
+  } else if (strcmp(op, "end_prologue") == 0) {
+    frame_end();
+    fprintf(codeout, "\t\tsub.l\t\t#%d,ER7\n", frame_size());
+  } else if (strcmp(op, "return") == 0) {
+    fprintf(codeout, "\t\tbra\t\t%s\n", label_return);
+  } else if (strcmp(op, "end_func") == 0) {
+    pop_idle();
+    pop_idle();
+    pop_idle();
+    pop_idle();
+    pop_idle();
+    pop_idle();
+    fprintf(codeout, "%s\t\t.equ\t\t$\n", label_return);
+    fprintf(codeout, "\t\tadd.l\t\t#%d,ER7\n", frame_size());
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER0");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER1");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER2");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER3");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER4");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER5");
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", "ER6");
+    fprintf(codeout, "\t\trts\t\t\n");
+    frame_cancel();
+  } else if (strcmp(op, "store_arg") == 0) {
+    r0 = pop_inuse();
+    fprintf(codeout, "\t\tpush.l\t\t%s\n", r0);
+    push_idle(r0);
+  } else if (strcmp(op, "call") == 0) {
+    fprintf(codeout, "\t\tbsr\t\t%s\n", opr);
+  } else if (strcmp(op, "load_arg") == 0) {
+    r0 = pop_idle();
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", r0);
+    push_inuse(r0);
+  } else if (strcmp(op, "cancel_arg") == 0) {
+    r0 = pop_idle();
+    fprintf(codeout, "\t\tpop.l\t\t%s\n", r0);
+    push_idle(r0);
   } else if (strcmp(op, "load_num") == 0) {
     if ((i = enter_constants(opr)) < 0) {
       return;
@@ -172,6 +238,13 @@ void encode(char *op, char *opr)
   } else if (strcmp(op, "load_id") == 0) {
     if ((i = find_symbols(opr)) < 0) {
       error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].level != 0) {
+      sprintf(opr, "(%d,ER6)", symbols[i].offset);
+      r0 = pop_idle();
+      fprintf(codeout, "\t\tmov.l\t\t@%s,%s\n", opr, r0);
+      push_inuse(r0);
       return;
     }
     if (symbols[i].type == TYPE_LONG) {
@@ -195,6 +268,13 @@ void encode(char *op, char *opr)
   } else if (strcmp(op, "store_id") == 0) {
     if ((i = find_symbols(opr)) < 0) {
       error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].level != 0) {
+      sprintf(opr, "(%d,ER6)", symbols[i].offset);
+      r0 = pop_inuse();
+      fprintf(codeout, "\t\tmov.l\t\t%s,@%s\n", r0, opr);
+      push_idle(r0);
       return;
     }
     if (symbols[i].type == TYPE_LONG) {

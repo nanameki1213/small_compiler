@@ -13,9 +13,8 @@ void parse_factor()
     char id[BUFSIZ];
     int args;
     int i;
-    gen_code("load_id", lexeme);
-    get_token();
     strcpy(id, lexeme);
+    get_token();
     if (token == TOKEN_LPAR) {
       args = 0;
       get_token();
@@ -318,23 +317,25 @@ void parse_function()
   if (token == TOKEN_FUNCTION) {
     get_token();
     if (token == TOKEN_ID) {
-      get_token();
       gen_code("start_func", lexeme);
+      get_token();
       if (token == TOKEN_LPAR) {
+        get_token();
         if (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
           parse_variable();
           while (token == TOKEN_COMMA) {
             get_token();
             parse_variable();
           }
-          if (token == TOKEN_RPAR) {
-            get_token();
-          } else {
-            error(ERROR_SYNTAX, lexeme, lineno);
-          }
         } else {
           ;
         }
+        if (token == TOKEN_RPAR) {
+          get_token();
+        } else {
+          error(ERROR_SYNTAX, lexeme, lineno);
+        }
+
         gen_code("start_prologue", "-");
         if (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
           parse_variable();
@@ -391,11 +392,13 @@ void parse_program()
       } else {
         error(ERROR_SYNTAX, lexeme, lineno);
       }
+    } else {
+      break;
     }
-    gen_code("label", "main");
-    parse_statement();
-    gen_code("end", "-");
   }
+  gen_code("label", "main");
+  parse_statement();
+  gen_code("end", "-");
 }
 
 void parse()

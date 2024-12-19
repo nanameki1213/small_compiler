@@ -123,16 +123,17 @@ void frame_end()
   }
 
   for (int i = 0; i < end_of_symbols; i++) {
-    if (symbols[i].level == 0) {
+    if (symbols[end_of_symbols - 1 - i].level == 0) {
       continue;
     }
     symbols[end_of_symbols - 1 - i].offset = i * 4;
   }
+  int base_offset = symbols[base].offset;
   for (int i = 0; i < end_of_symbols; i++) {
     if (symbols[i].level == 0) {
       continue;
     }
-    symbols[i].offset -= base * 4;
+    symbols[i].offset -= base_offset;
   }
 }
 

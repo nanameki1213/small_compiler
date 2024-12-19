@@ -187,7 +187,7 @@ state4:
     int index;
     // 予約語か？
     if ((index = find_keywords(lexeme)) >= 0) {
-      token = TOKEN_IF + index;
+      token = keywords[index].value;
     } else {
       token = TOKEN_ID;
     }
@@ -416,83 +416,85 @@ final:
 void print_token()
 {
 	if (token == TOKEN_EOF) {
-		fprintf(lexout, "EOF\n");
+		fprintf(stdout, "EOF\n");
 	} else if (token == TOKEN_ERROR) {
-		fprintf(lexout, "ERROR\t[%s]\n", lexeme);
+		fprintf(stdout, "ERROR\t[%s]\n", lexeme);
 	} else if (token == TOKEN_ID) {
-		fprintf(lexout, "ID\t[%s]\n", lexeme);
+		fprintf(stdout, "ID\t[%s]\n", lexeme);
 	} else if (token == TOKEN_NUM) {
-		fprintf(lexout, "NUM\t[%s]\t[%s]\n", lexeme, lexvalue);
+		fprintf(stdout, "NUM\t[%s]\t[%s]\n", lexeme, lexvalue);
   } else if (token == TOKEN_COL) {
- 		fprintf(lexout, "COL\t[%s]\n", lexeme);
+ 		fprintf(stdout, "COL\t[%s]\n", lexeme);
   } else if (token == TOKEN_SEMICOL) {
- 		fprintf(lexout, "SEMICOL\t[%s]\n", lexeme);
+ 		fprintf(stdout, "SEMICOL\t[%s]\n", lexeme);
   } else if (token == TOKEN_COLEQ) {
- 		fprintf(lexout, "COLEQ\t[%s]\n", lexeme);
+ 		fprintf(stdout, "COLEQ\t[%s]\n", lexeme);
   } else if (token == TOKEN_EQ) {
- 		fprintf(lexout, "EQ\t[%s]\n", lexeme);
+ 		fprintf(stdout, "EQ\t[%s]\n", lexeme);
   } else if (token == TOKEN_NE) {
- 		fprintf(lexout, "NE\t[%s]\n", lexeme);
+ 		fprintf(stdout, "NE\t[%s]\n", lexeme);
   } else if (token == TOKEN_LT) {
- 		fprintf(lexout, "LT\t[%s]\n", lexeme);
+ 		fprintf(stdout, "LT\t[%s]\n", lexeme);
   } else if (token == TOKEN_LE) {
- 		fprintf(lexout, "LE\t[%s]\n", lexeme);
+ 		fprintf(stdout, "LE\t[%s]\n", lexeme);
   } else if (token == TOKEN_GT) {
- 		fprintf(lexout, "GT\t[%s]\n", lexeme);
+ 		fprintf(stdout, "GT\t[%s]\n", lexeme);
   } else if (token == TOKEN_GE) {
- 		fprintf(lexout, "GE\t[%s]\n", lexeme);
+ 		fprintf(stdout, "GE\t[%s]\n", lexeme);
   } else if (token == TOKEN_LPAR) {
- 		fprintf(lexout, "LPAR\t[%s]\n", lexeme);
+ 		fprintf(stdout, "LPAR\t[%s]\n", lexeme);
   } else if (token == TOKEN_RPAR) {
- 		fprintf(lexout, "RPAR\t[%s]\n", lexeme);
+ 		fprintf(stdout, "RPAR\t[%s]\n", lexeme);
   } else if (token == TOKEN_PLUS) {
- 		fprintf(lexout, "PLUS\t[%s]\n", lexeme);
+ 		fprintf(stdout, "PLUS\t[%s]\n", lexeme);
   } else if (token == TOKEN_MINUS) {
- 		fprintf(lexout, "MINUS\t[%s]\n", lexeme);
+ 		fprintf(stdout, "MINUS\t[%s]\n", lexeme);
   } else if (token == TOKEN_ASTER) {
- 		fprintf(lexout, "ASTER\t[%s]\n", lexeme);
+ 		fprintf(stdout, "ASTER\t[%s]\n", lexeme);
   } else if (token == TOKEN_SLASH) {
- 		fprintf(lexout, "SLASH\t[%s]\n", lexeme);
+ 		fprintf(stdout, "SLASH\t[%s]\n", lexeme);
   } else if (token == TOKEN_IF) {
-    fprintf(lexout, "IF\t[%s]\n", lexeme);
+    fprintf(stdout, "IF\t[%s]\n", lexeme);
   } else if (token == TOKEN_THEN) {
-    fprintf(lexout, "THEN\t[%s]\n", lexeme);
+    fprintf(stdout, "THEN\t[%s]\n", lexeme);
   } else if (token == TOKEN_ELSE) {
-    fprintf(lexout, "ELSE\t[%s]\n", lexeme);
+    fprintf(stdout, "ELSE\t[%s]\n", lexeme);
   } else if (token == TOKEN_WHILE) {
-    fprintf(lexout, "WHILE\t[%s]\n", lexeme);
+    fprintf(stdout, "WHILE\t[%s]\n", lexeme);
   } else if (token == TOKEN_DO) {
-    fprintf(lexout, "DO\t[%s]\n", lexeme);
+    fprintf(stdout, "DO\t[%s]\n", lexeme);
   } else if (token == TOKEN_REPEAT) {
-    fprintf(lexout, "REPEAT\t[%s]\n", lexeme);
+    fprintf(stdout, "REPEAT\t[%s]\n", lexeme);
   } else if (token == TOKEN_UNTIL) {
-    fprintf(lexout, "UNTIL\t[%s]\n", lexeme);
+    fprintf(stdout, "UNTIL\t[%s]\n", lexeme);
   } else if (token == TOKEN_GOTO) {
-    fprintf(lexout, "GOTO\t[%s]\n", lexeme);
+    fprintf(stdout, "GOTO\t[%s]\n", lexeme);
   } else if (token == TOKEN_BEGIN) {
-    fprintf(lexout, "BEGIN\t[%s]\n", lexeme);
+    fprintf(stdout, "BEGIN\t[%s]\n", lexeme);
   } else if (token == TOKEN_END) {
-    fprintf(lexout, "END\t[%s]\n", lexeme);
+    fprintf(stdout, "END\t[%s]\n", lexeme);
   } else if (token == TOKEN_LONG) {
-    fprintf(lexout, "LONG\t[%s]\n", lexeme);
+    fprintf(stdout, "LONG\t[%s]\n", lexeme);
   } else if (token == TOKEN_WORD) {
-    fprintf(lexout, "WORD\t[%s]\n", lexeme);
+    fprintf(stdout, "WORD\t[%s]\n", lexeme);
   } else if (token == TOKEN_BYTE) {
-    fprintf(lexout, "BYTE\t[%s]\n", lexeme);
+    fprintf(stdout, "BYTE\t[%s]\n", lexeme);
   } else if (token == TOKEN_AND) {
-    fprintf(lexout, "AND\t[%s]\n", lexeme);
+    fprintf(stdout, "AND\t[%s]\n", lexeme);
   } else if (token == TOKEN_OR) {
-    fprintf(lexout, "OR\t[%s]\n", lexeme);
+    fprintf(stdout, "OR\t[%s]\n", lexeme);
   } else if (token == TOKEN_NOT) {
-    fprintf(lexout, "NOT\t[%s]\n", lexeme);
+    fprintf(stdout, "NOT\t[%s]\n", lexeme);
   } else if (token == TOKEN_FUNCTION) {
-    fprintf(lexout, "FUNCTION\t[%s]\n", lexeme);
+    fprintf(stdout, "FUNCTION\t[%s]\n", lexeme);
   } else if (token == TOKEN_RETURN) {
-    fprintf(lexout, "RETURN\t[%s]\n", lexeme);
+    fprintf(stdout, "RETURN\t[%s]\n", lexeme);
   } else if (token == TOKEN_COMMA) {
-    fprintf(lexout, "COMMA\t[%s]\n", lexeme);
+    fprintf(stdout, "COMMA\t[%s]\n", lexeme);
+  } else if (token == TOKEN_PERCENT) {
+    fprintf(stdout, "PERCENT\t[%s]\n", lexeme);
   } else {
-    fprintf(lexout, "print_token: Unknown token.\n");
+    fprintf(stdout, "print_token: Unknown token.\n");
   }
 }
 

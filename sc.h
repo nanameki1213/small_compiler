@@ -121,6 +121,7 @@ extern void frame_start();
 extern void frame_end();
 extern int frame_size();
 extern void frame_cancel();
+extern void print_symbols();
 
 extern int find_symbols(char *label);
 extern int enter_symbols(char *label, int type);
