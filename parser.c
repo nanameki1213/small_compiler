@@ -19,19 +19,20 @@ void parse_factor()
     if (token == TOKEN_LPAR) {
       args = 0;
       get_token();
-      parse_expression();
-      gen_code("store_arg", "-");
-      args += 1;
-      while (token == TOKEN_COMMA) {
+      if (token == TOKEN_RPAR) {
         get_token();
+      } else {
         parse_expression();
-        gen_code("store_arg", "-");
-        args += 1;
+        while (token == TOKEN_COMMA) {
+          get_token();
+          parse_expression();
+        }
+        if (token != TOKEN_RPAR) {
+          error(ERROR_SYNTAX, lexeme, lineno);
+        } else {
+          get_token();
+        }
       }
-      if (token != TOKEN_RPAR) {
-        error(ERROR_SYNTAX, lexeme, lineno);
-      }
-      get_token();
       gen_code("load_num", "0");
       gen_code("store_arg", "-");
       gen_code("call", id);
@@ -39,6 +40,7 @@ void parse_factor()
       for (i = 0; i < args; i++) {
         gen_code("cancel_arg", "-");
       }
+
     } else {
       gen_code("load_id", id);
     }
@@ -206,20 +208,24 @@ void parse_statement()
     } else if (token == TOKEN_LPAR) {
       get_token();
       args = 0;
-      parse_expression();
-      gen_code("store_arg", "-");
-      args += 1;
-      while (token == TOKEN_COMMA) {
+      if (token == TOKEN_RPAR) {
         get_token();
+      } else {
         parse_expression();
-        // TODO:parse_expressionで引数があるかどうかがわからない
         gen_code("store_arg", "-");
         args += 1;
+        while (token == TOKEN_COMMA) {
+          get_token();
+          parse_expression();
+          gen_code("store_arg", "-");
+          args += 1;
+        }
+        if (token == TOKEN_RPAR) {
+          get_token();
+        } else {
+          error(ERROR_SYNTAX, lexeme, lineno);
+        }
       }
-      if (token != TOKEN_RPAR) {
-        error(ERROR_SYNTAX, lexeme, lineno);
-      }
-      get_token();
       gen_code("load_num", "0");
       gen_code("store_arg", "-");
       gen_code("call", id);
@@ -315,25 +321,42 @@ void parse_function()
       get_token();
       gen_code("start_func", lexeme);
       if (token == TOKEN_LPAR) {
-        parse_variable();
-        while (token == TOKEN_COMMA) {
-          get_token();
+        if (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
           parse_variable();
-        }
-        if (token != TOKEN_RPAR) {
-          error(ERROR_SYNTAX, lexeme, lineno);
+          while (token == TOKEN_COMMA) {
+            get_token();
+            parse_variable();
+          }
+          if (token == TOKEN_RPAR) {
+            get_token();
+          } else {
+            error(ERROR_SYNTAX, lexeme, lineno);
+          }
         } else {
-          get_token();
+          ;
         }
         gen_code("start_prologue", "-");
-        parse_variable();
-        while (token == TOKEN_SEMICOL) {
-          get_token();
+        if (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
           parse_variable();
+          if (token == TOKEN_SEMICOL) {
+            get_token();
+          } else {
+            error(ERROR_SYNTAX, lexeme, lineno);
+          }
+          while (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
+            parse_variable();
+            if (token == TOKEN_SEMICOL) {
+              get_token();
+            } else {
+              error(ERROR_SYNTAX, lexeme, lineno);
+            }
+          }
         }
         gen_code("end_prologue", "-");
         parse_statement();
         gen_code("end_func", "-");
+      } else {
+        error(ERROR_SYNTAX, lexeme, lineno);
       }
     }
   }
@@ -342,31 +365,37 @@ void parse_function()
 void parse_program()
 {
   gen_code("start", "main");
-  while(token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
-    parse_variable();
-    if (token == TOKEN_COL) {
-      get_token();
-      if (token == TOKEN_NUM) {
-        gen_code("set_address", lexvalue);
+  while (1) {
+    if (token == TOKEN_LONG || token == TOKEN_WORD || token == TOKEN_BYTE) {
+      parse_variable();
+      if (token == TOKEN_COL) {
+        get_token();
+        if (token == TOKEN_NUM) {
+          gen_code("set_address", lexvalue);
+          get_token();
+        } else {
+          error(ERROR_SYNTAX, "expect num", lineno);
+        }
+      } else {
+        ;
+      }
+      if (token == TOKEN_SEMICOL) {
         get_token();
       } else {
-        error(ERROR_SYNTAX, "expect num", lineno);
+        error(ERROR_SYNTAX, lexeme, lineno);
       }
-    } else {
-      ;
+    } else if (token == TOKEN_FUNCTION) {
+      parse_function();
+      if (token == TOKEN_SEMICOL) {
+        get_token();
+      } else {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
     }
-    if (token == TOKEN_SEMICOL) {
-      get_token();
-    }
-
-    parse_function();
-    if (token == TOKEN_SEMICOL) {
-      get_token();
-    }
+    gen_code("label", "main");
+    parse_statement();
+    gen_code("end", "-");
   }
-  gen_code("label", "main");
-  parse_statement();
-  gen_code("end", "-");
 }
 
 void parse()

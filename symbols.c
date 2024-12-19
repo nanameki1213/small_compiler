@@ -11,7 +11,7 @@ int find_symbols(char *label)
 {
   int i;
 
-  for (i = 0; i < end_of_symbols; i++) {
+  for (i = end_of_symbols - 1; i >= 0; i--) {
     if (strcmp(symbols[i].label, label) == 0) {
       return i;
     }
@@ -22,30 +22,38 @@ int find_symbols(char *label)
 
 int enter_symbols(char *label, int type)
 {
-  if (find_symbols(label) >= 0) {
-    error(ERROR_DOUBLE, label, 0);
-    return -1;
+  int i;
+
+  if ((i = find_symbols(label)) >= 0) {
+    if (symbols[i].level == level) {
+      error(ERROR_DOUBLE, label, 0);
+      return -1;
+    }
   }
 
-  if (end_of_symbols >= MAX_SYMBOLS) {
-    error(ERROR_OVERFLOW, "symbols", 0);
-    return -1;
-  }
-
-  if (type == TYPE_LONG) {
+  if (level == 0 && type == TYPE_LONG) {
     symbols[end_of_symbols].label = strdup(label);
     symbols[end_of_symbols].type = type;
+    symbols[end_of_symbols].level = level;
     symbols[end_of_symbols].size = 4;
     symbols[end_of_symbols].offset = OFFSET_AUTO;
-  } else if (type == TYPE_WORD) {
+  } else if (level == 0 && type == TYPE_WORD) {
     symbols[end_of_symbols].label = strdup(label);
     symbols[end_of_symbols].type = type;
+    symbols[end_of_symbols].level = level;
     symbols[end_of_symbols].size = 2;
     symbols[end_of_symbols].offset = OFFSET_AUTO;
-  } else if (type == TYPE_BYTE) {
+  } else if (level == 0 && type == TYPE_BYTE) {
     symbols[end_of_symbols].label = strdup(label);
     symbols[end_of_symbols].type = type;
+    symbols[end_of_symbols].level = level;
     symbols[end_of_symbols].size = 1;
+    symbols[end_of_symbols].offset = OFFSET_AUTO;
+  } else if (level != 0) {
+    symbols[end_of_symbols].label = strdup(label);
+    symbols[end_of_symbols].type = type;
+    symbols[end_of_symbols].level = level;
+    symbols[end_of_symbols].size = 4;
     symbols[end_of_symbols].offset = OFFSET_AUTO;
   } else {
     error(ERROR_INTERNAL, "enter_symbols", 0);
@@ -57,6 +65,7 @@ int enter_symbols(char *label, int type)
 void setup_symbols()
 {
   end_of_symbols = 0;
+  level = 0;
 }
 
 void encode_symbols(FILE *out) {
@@ -66,6 +75,10 @@ void encode_symbols(FILE *out) {
   offset = 0;
   fprintf(out, "\t\t.align\t\t2\n");
   for (i = 0; i < end_of_symbols; i++) {
+    if (symbols[i].level != 0) {
+      continue;
+    }
+
     if (symbols[i].offset != OFFSET_AUTO) {
       continue;
     }
@@ -94,4 +107,50 @@ void encode_symbols(FILE *out) {
       error(ERROR_INTERNAL, "encode_symbols", 0);
     }
   }
+}
+
+void frame_start()
+{
+  level = level + 1;
+  frame_base = end_of_symbols;
+}
+
+void frame_end()
+{
+  int base;
+  if ((base = find_symbols("fp")) < 0) {
+    error(ERROR_INTERNAL, "stack is ignored.\n", 0);
+  }
+
+  for (int i = 0; i < end_of_symbols; i++) {
+    if (symbols[i].level == 0) {
+      continue;
+    }
+    symbols[end_of_symbols - 1 - i].offset = i * 4;
+  }
+  for (int i = 0; i < end_of_symbols; i++) {
+    if (symbols[i].level == 0) {
+      continue;
+    }
+    symbols[i].offset -= base * 4;
+  }
+}
+
+int frame_size()
+{
+  int offset;
+  int i;
+
+  if ((i = find_symbols("er0")) < 0) {
+    error(ERROR_INTERNAL, "frame_offset", 0);
+    return -1;
+  }
+  offset = symbols[end_of_symbols - 1].offset - symbols[i].offset;
+  return -offset;
+}
+
+void frame_cancel()
+{
+  end_of_symbols = frame_base;
+  level = level - 1;
 }
