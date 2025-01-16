@@ -9,10 +9,10 @@ OBJS = $(SRCS:.c=.o)
 
 
 $(TARGET):	$(OBJS)
-	$(CC) -o $@ $^
+	$(CC) -Wall -o $@ $^
 
 $(OBJS):	$(SRCS)
-	$(CC) -c $^
+	$(CC) -Wall -c $^
 
 clean:
 	rm $(TARGET) $(OBJS)

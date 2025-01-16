@@ -152,10 +152,6 @@ state2:
     goto state3;
   } else if (c == EOF) {
     goto state0;
-  } else if (c == ')') {
-    get_char();
-    end_of_lexeme = 0;
-    goto state0;
   } else {
     save_char(c);
     get_char();
@@ -167,6 +163,10 @@ state3:
     save_char(c);
     get_char();
     goto state3;
+  } else if (c == ')') {
+    get_char();
+    end_of_lexeme = 0;
+    goto state0;
   } else if (c == EOF) {
     end_of_lexeme = 0;
     goto state0;

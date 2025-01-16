@@ -6,7 +6,7 @@ int char_pos(char *s, char c)
 {
 	int i;
 
-	for (i = 0; i < s[i] != '\0'; i++) {
+	for (i = 0; s[i] != '\0'; i++) {
 		if (s[i] == c) {
 			return i;
 		}
