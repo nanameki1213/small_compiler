@@ -122,11 +122,13 @@ void frame_end()
     error(ERROR_INTERNAL, "stack is ignored.\n", 0);
   }
 
+  int offset = 0;
   for (int i = 0; i < end_of_symbols; i++) {
     if (symbols[end_of_symbols - 1 - i].level == 0) {
       continue;
     }
-    symbols[end_of_symbols - 1 - i].offset = i * 4;
+    symbols[end_of_symbols - 1 - i].offset = offset;
+    offset += symbols[end_of_symbols - 1 - i].size;
   }
   int base_offset = symbols[base].offset;
   for (int i = 0; i < end_of_symbols; i++) {

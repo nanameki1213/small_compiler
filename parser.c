@@ -40,6 +40,16 @@ void parse_factor()
         gen_code("cancel_arg", "-");
       }
 
+    } else if (token == TOKEN_LBRA) {
+      gen_code("load_adr", id);
+      get_token();
+      parse_expression();
+      gen_code("add_index", id);
+      gen_code("load_ind", id);
+      if (token != TOKEN_RBRA) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
     } else {
       gen_code("load_id", id);
     }
@@ -167,12 +177,12 @@ void parse_variable()
     if (token == TOKEN_ID) {
       gen_code("var_long", lexeme);
       get_token();
-    }
+          }
   } else if (token == TOKEN_WORD) {
     get_token();
     if (token == TOKEN_ID) {
       gen_code("var_word", lexeme);
-      get_token();
+      get_token(); 
     }
   } else if (token == TOKEN_BYTE) {
     get_token();
@@ -182,6 +192,18 @@ void parse_variable()
     }
   } else {
     error(ERROR_SYNTAX, lexeme, lineno);
+  }
+  if (token == TOKEN_LBRA) {
+    get_token();
+    if (token != TOKEN_NUM) {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+    gen_code("set_size", lexvalue);
+    get_token();
+    if (token != TOKEN_RBRA) {
+      error(ERROR_SYNTAX, lexeme, lineno);
+    }
+    get_token();
   }
 }
 
@@ -196,7 +218,22 @@ void parse_statement()
   if (token == TOKEN_ID) {
     strcpy(id, lexeme);
     get_token();
-    if (token == TOKEN_COLEQ) {
+    if (token == TOKEN_LBRA) {
+      get_token();
+      gen_code("load_adr", id);
+      parse_expression();
+      gen_code("add_index", id);
+      if (token != TOKEN_RBRA) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
+      if (token != TOKEN_COLEQ) {
+        error(ERROR_SYNTAX, lexeme, lineno);
+      }
+      get_token();
+      parse_expression();
+      gen_code("store_ind", id);
+    } else if (token == TOKEN_COLEQ) {
       get_token();
       parse_expression();
       gen_code("store_id", id);

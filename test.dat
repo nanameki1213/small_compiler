@@ -1,12 +1,9 @@
-long A;
+long buffer[1024];
+long a;
 
-function func(long x, long y)
-long i;
+function init()
+
 begin
-  i := x + y;
-  return i;
+  a := buffer[100];
+  buffer[100] := a + 1;
 end;
-
-begin
-  A := func(10, 20);
-end

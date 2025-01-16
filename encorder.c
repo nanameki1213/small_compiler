@@ -292,13 +292,114 @@ void encode(char *op, char *opr)
     } else {
       error(ERROR_TYPE, opr, 0);
     }
-  } else if (strcmp(op, "neg") == 0) {
-    r0 = pop_inuse();
-    fprintf(codeout, "\t\tneg.l\t\t%s\n", r0);
-    push_inuse(r0);
-  } else if (strcmp(op, "not") == 0) {
-    r0 = pop_inuse();
-    fprintf(codeout, "\t\tnot.l\t\t%s\n", r0);
+  } else if (strcmp(op, "load_adr") == 0) {
+    if ((i = find_symbols(opr)) < 0) {
+      error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].level == 0) {
+      r0 = pop_idle();
+      fprintf(codeout, "\t\tmov.l\t\t#%s,%s\n", opr, r0);
+      push_inuse(r0);
+    } else {
+      r0 = pop_idle();
+      fprintf(codeout, "\t\tmov.l\t\tER6,%s\n", r0);
+      fprintf(codeout, "\t\tadd.l\t\t#%d,%s\n",
+          symbols[i].offset, r0);
+      push_inuse(r0);
+    }
+    return;
+  } else if(strcmp(op, "add_index") == 0) {
+    if ((i = find_symbols(opr)) < 0) {
+      error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].type == TYPE_LONG) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tshal.l\t\t%s\n", r0);
+      fprintf(codeout, "\t\tshal.l\t\t%s\n", r0);
+      fprintf(codeout, "\t\tadd.l\t\t%s,%s\n", r0, r1);
+      push_inuse(r1);
+      push_idle(r0);
+    } else if (symbols[i].type == TYPE_WORD) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tshal.l\t\t%s\n", r0);
+      fprintf(codeout, "\t\tadd.l\t\t%s,%s\n", r0, r1);
+      push_inuse(r1);
+      push_idle(r0);
+    } else if (symbols[i].type == TYPE_BYTE) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tadd.l\t\t%s,%s\n", r0, r1);
+      push_inuse(r1);
+      push_idle(r0);
+    } else {
+      error(ERROR_TYPE, opr, 0);
+    }
+  } else if (strcmp(op, "load_ind") == 0) {
+    if ((i = find_symbols(opr)) < 0) {
+    error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].type == TYPE_LONG) {
+      r0 = pop_inuse();
+      fprintf(codeout, "\t\tmov.l\t\t@%s,%s\n", r0, r0);
+      push_inuse(r0);
+    } else if (symbols[i].type == TYPE_WORD) {
+      r0 = pop_inuse();
+      fprintf(codeout, "\t\tmov.w\t\t@%s,%s\n", r0, ER2R(r0));
+      fprintf(codeout, "\t\texts.l\t\t%s\n", r0);
+      push_inuse(r0);
+    } else if (symbols[i].type == TYPE_BYTE) {
+      r0 = pop_inuse();
+      fprintf(codeout, "\t\tmov.b\t\t@%s,%s\n", r0, ER2RL(r0));
+      fprintf(codeout, "\t\texts.w\t\t%s\n", ER2R(r0));
+      fprintf(codeout, "\t\texts.l\t\t%s\n", r0);
+      push_inuse(r0);
+    } else {
+      error(ERROR_TYPE, opr, 0);
+    }
+  } else if (strcmp(op, "store_ind") == 0) {
+    if ((i = find_symbols(opr)) < 0) {
+      error(ERROR_UNDEFINED, opr, 0);
+      return;
+    }
+    if (symbols[i].type == TYPE_LONG) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tmov.l\t\t%s,@%s\n", r0, r1);
+      push_idle(r1);
+      push_idle(r0);
+    } else if (symbols[i].type == TYPE_WORD) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tmov.w\t\t%s,@%s\n", ER2R(r0), r1);
+      push_idle(r1);
+      push_idle(r0);
+    } else if (symbols[i].type == TYPE_BYTE) {
+      r0 = pop_inuse();
+      r1 = pop_inuse();
+      fprintf(codeout, "\t\tmov.b\t\t%s,@%s\n", ER2RL(r0), r1);
+      push_idle(r1);
+      push_idle(r0);
+    } else {
+      error(ERROR_TYPE, opr, 0);
+    }
+  } else if (strcmp(op, "set_size") == 0) {
+    if (current_id < 0) {
+      error(ERROR_INTERNAL, "encode: set_size", 0);
+      return;
+    }
+    symbols[current_id].size = symbols[current_id].size *  atoi(opr);
+  } else if (strcmp(op, "neg") == 0) {               
+    r0 = pop_inuse();                                
+    fprintf(codeout, "\t\tneg.l\t\t%s\n", r0);       
+    push_inuse(r0);                                  
+  } else if (strcmp(op, "not") == 0) {               
+    r0 = pop_inuse();                                
+    fprintf(codeout, "\t\tnot.l\t\t%s\n", r0);       
     push_inuse(r0);
   } else if (strcmp(op, "mul") == 0) {
     r0 = pop_inuse();

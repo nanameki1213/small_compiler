@@ -48,6 +48,8 @@
 #define TOKEN_COMMA   275
 #define TOKEN_FUNCTION  276
 #define TOKEN_RETURN    277
+#define TOKEN_LBRA      278
+#define TOKEN_RBRA      279
 
 #define MAX_ERRORCOUNT  10
 #define ERROR_OVERFLOW  1

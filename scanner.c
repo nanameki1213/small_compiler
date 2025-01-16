@@ -125,6 +125,16 @@ state0:
     get_char();
     token = TOKEN_COMMA;
     goto final;
+  } else if (c == '[') {
+    save_char(c);
+    get_char();
+    token = TOKEN_LBRA;
+    goto final;
+  } else if (c == ']') {
+    save_char(c);
+    get_char();
+    token = TOKEN_RBRA;
+    goto final;
   } else if (c == EOF) {
     token = TOKEN_EOF;
     goto final;
@@ -493,6 +503,10 @@ void print_token()
     fprintf(stdout, "COMMA\t[%s]\n", lexeme);
   } else if (token == TOKEN_PERCENT) {
     fprintf(stdout, "PERCENT\t[%s]\n", lexeme);
+  } else if (token == TOKEN_LBRA) {
+    fprintf(stdout, "LBRA\t[%s]\n", lexeme);
+  } else if (token == TOKEN_RBRA) {
+    fprintf(stdout, "RBRA\t[%s]\n", lexeme);
   } else {
     fprintf(stdout, "print_token: Unknown token.\n");
   }
