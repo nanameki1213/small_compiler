@@ -1,0 +1,55 @@
+#define TOKEN_EOF 257
+#define TOKEN_ERROR 258
+#define TOKEN_ID 259
+#define TOKEN_NUM 260
+#define TOKEN_COL 261
+#define TOKEN_SEMICOL 262
+#define TOKEN_COLEQ 263
+#define TOKEN_EQ 264
+#define TOKEN_NE 265
+#define TOKEN_LT 266
+#define TOKEN_LE 267
+#define TOKEN_GT 268
+#define TOKEN_GE 269
+#define TOKEN_LPAR 270
+#define TOKEN_RPAR 271
+#define TOKEN_PLUS 272
+#define TOKEN_MINUS 273
+#define TOKEN_ASTER 274
+#define TOKEN_SLASH 275
+#define TOKEN_PERCENT 276
+#define TOKEN_COMMA 277
+#define TOKEN_SHIFTL 278
+#define TOKEN_SHIFTR 279
+#define TOKEN_LBRA 280
+#define TOKEN_RBRA 281
+#define TOKEN_IF 282
+#define TOKEN_THEN 283
+#define TOKEN_ELSE 284
+#define TOKEN_WHILE 285
+#define TOKEN_DO 286
+#define TOKEN_REPEAT 287
+#define TOKEN_UNTIL 288
+#define TOKEN_GOTO 289
+#define TOKEN_BEGIN 290
+#define TOKEN_END 291
+#define TOKEN_LONG 292
+#define TOKEN_WORD 293
+#define TOKEN_BYTE 294
+#define TOKEN_AND 295
+#define TOKEN_OR 296
+#define TOKEN_NOT 297
+#define TOKEN_RETURN 298
+#define TOKEN_FUNCTION 299
+#ifdef YYSTYPE
+#undef  YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+#endif
+#ifndef YYSTYPE_IS_DECLARED
+#define YYSTYPE_IS_DECLARED 1
+typedef union {
+  char *lexeme;
+  char *lexvalue;
+} YYSTYPE;
+#endif /* !YYSTYPE_IS_DECLARED */
+extern YYSTYPE yylval;

@@ -4,12 +4,12 @@
 		.section	B,code,locate=H'000100
 reset:		mov.l		#H'FFFF10,ER7
 		bra		main
-smr1		.equ		H'000FFFB8
-brr1		.equ		H'000FFFB9
-scr1		.equ		H'000FFFBA
-tdr1		.equ		H'000FFFBB
-ssr1		.equ		H'000FFFBC
-rdr1		.equ		H'000FFFBD
+smr1		.equ		H'00FFFFB8
+brr1		.equ		H'00FFFFB9
+scr1		.equ		H'00FFFFBA
+tdr1		.equ		H'00FFFFBB
+ssr1		.equ		H'00FFFFBC
+rdr1		.equ		H'00FFFFBD
 main		.equ		$
 		mov.l		@L0008,ER0
 		mov.b		R0L,@scr1
@@ -34,23 +34,19 @@ L0012		.equ		$
 		mov.w		@count,R0
 		exts.l		ER0
 		mov.l		@L0013,ER1
-L0014:		dec.l		#1,ER1
-		bmi		L0015
-		shal.l		ER0
-		bra		L0014
-L0015		.equ		$
+		sub.l		ER1,ER0
 		mov.w		R0,@count
 		bra		L0000
 L0001		.equ		$
-		mov.l		@L0016,ER0
+		mov.l		@L0014,ER0
 		mov.b		R0L,@scr1
 		mov.b		@ssr1,R0L
 		exts.w		R0
 		exts.l		ER0
 		mov.b		R0L,@c
-		mov.l		@L0017,ER0
+		mov.l		@L0015,ER0
 		mov.b		R0L,@ssr1
-		mov.l		@L0018,ER0
+		mov.l		@L0016,ER0
 		mov.b		R0L,@c
 loop		.equ		$
 		mov.b		@ssr1,R0L
@@ -61,26 +57,20 @@ L0002		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0017,ER1
+		mov.l		@L0015,ER1
 		and.l		ER1,ER0
 		mov.l		@L0008,ER1
 		cmp.l		ER1,ER0
-		beq		L0019
+		beq		L0017
 		mov.l		#H'00000000,ER0
-		bra		L0020
-L0019:		mov.l		#H'FFFFFFFF,ER0
-L0020		.equ		$
+		bra		L0018
+L0017:		mov.l		#H'FFFFFFFF,ER0
+L0018		.equ		$
 		and.l		ER0,ER0
 		beq		L0003
 		mov.b		@ssr1,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0021,ER1
-L0022:		dec.l		#1,ER1
-		bmi		L0023
-		shar.l		ER0
-		bra		L0022
-L0023		.equ		$
 		mov.b		R0L,@s
 		bra		L0002
 L0003		.equ		$
@@ -91,7 +81,7 @@ L0003		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0024,ER1
+		mov.l		@L0019,ER1
 		and.l		ER1,ER0
 		mov.b		R0L,@ssr1
 		mov.b		@ssr1,R0L
@@ -102,15 +92,15 @@ L0004		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0025,ER1
+		mov.l		@L0020,ER1
 		and.l		ER1,ER0
 		mov.l		@L0008,ER1
 		cmp.l		ER1,ER0
-		beq		L0026
+		beq		L0021
 		mov.l		#H'00000000,ER0
-		bra		L0027
-L0026:		mov.l		#H'FFFFFFFF,ER0
-L0027		.equ		$
+		bra		L0022
+L0021:		mov.l		#H'FFFFFFFF,ER0
+L0022		.equ		$
 		and.l		ER0,ER0
 		beq		L0005
 		mov.b		@ssr1,R0L
@@ -122,15 +112,15 @@ L0005		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0028,ER1
+		mov.l		@L0009,ER1
 		and.l		ER1,ER0
 		mov.l		@L0008,ER1
 		cmp.l		ER1,ER0
-		bne		L0029
+		bne		L0023
 		mov.l		#H'00000000,ER0
-		bra		L0030
-L0029:		mov.l		#H'FFFFFFFF,ER0
-L0030		.equ		$
+		bra		L0024
+L0023:		mov.l		#H'FFFFFFFF,ER0
+L0024		.equ		$
 		and.l		ER0,ER0
 		beq		L0006
 		mov.b		@rdr1,R0L
@@ -140,37 +130,32 @@ L0030		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0031,ER1
-		divxs.w		R1,ER0
-		exts.l		ER0
+		mov.l		@L0025,ER1
+		and.l		ER1,ER0
 		mov.b		R0L,@ssr1
 		bra		L0007
 L0006		.equ		$
 		mov.b		@s,R0L
 		exts.w		R0
 		exts.l		ER0
-		mov.l		@L0032,ER1
-		divxs.w		R1,ER0
-		mov.w		E0,R0
-		exts.l		ER0
+		mov.l		@L0026,ER1
+		and.l		ER1,ER0
 		mov.b		R0L,@ssr1
 L0007		.equ		$
 		bra		loop
 		bra		$
 		.align		2
 L0008		.data.l		H'00000000
-L0009		.data.l		H'00000033
+L0009		.data.l		H'00000040
 L0010		.data.l		H'00000118
 L0013		.data.l		H'00000001
-L0016		.data.l		H'00000030
-L0017		.data.l		H'00000080
-L0018		.data.l		H'0000002A
-L0021		.data.l		H'00000005
-L0024		.data.l		H'0000007F
-L0025		.data.l		H'00000078
-L0028		.data.l		H'00000040
-L0031		.data.l		H'000000BF
-L0032		.data.l		H'000000C7
+L0014		.data.l		H'00000030
+L0015		.data.l		H'00000080
+L0016		.data.l		H'0000002A
+L0019		.data.l		H'0000007F
+L0020		.data.l		H'00000078
+L0025		.data.l		H'000000BF
+L0026		.data.l		H'000000C7
 		.section	C,data,locate=H'FFBF20
 		.align		2
 count		.res.w		1

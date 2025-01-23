@@ -1,0 +1,1771 @@
+   0  $accept : program $end
+
+   1  factor : TOKEN_ID
+
+   2  $$1 :
+
+   3  factor : TOKEN_ID $$1 TOKEN_LPAR arglist_opt TOKEN_RPAR
+
+   4  $$2 :
+
+   5  factor : TOKEN_ID $$2 TOKEN_LBRA expression TOKEN_RBRA
+   6         | TOKEN_NUM
+   7         | TOKEN_LPAR expression TOKEN_RPAR
+   8         | TOKEN_NOT factor
+
+   9  arglist_opt :
+  10              | arglist
+
+  11  arglist : expression
+  12          | arglist TOKEN_COMMA expression
+
+  13  term : factor factorlist
+
+  14  factorlist :
+  15             | factorlist TOKEN_ASTER factor
+  16             | factorlist TOKEN_SLASH factor
+  17             | factorlist TOKEN_PERCENT factor
+  18             | factorlist TOKEN_SHIFTL factor
+  19             | factorlist TOKEN_SHIFTR factor
+  20             | factorlist TOKEN_AND factor
+
+  21  polynomial : term termlist
+  22             | TOKEN_PLUS term termlist
+
+  23  $$3 :
+
+  24  polynomial : TOKEN_MINUS term $$3 termlist
+
+  25  termlist :
+  26           | termlist TOKEN_PLUS term
+  27           | termlist TOKEN_MINUS term
+  28           | termlist TOKEN_OR term
+
+  29  expression : polynomial
+  30             | polynomial TOKEN_EQ polynomial
+  31             | polynomial TOKEN_NE polynomial
+  32             | polynomial TOKEN_LT polynomial
+  33             | polynomial TOKEN_LE polynomial
+  34             | polynomial TOKEN_GT polynomial
+  35             | polynomial TOKEN_GE polynomial
+
+  36  statement :
+  37            | TOKEN_ID TOKEN_COLEQ expression
+
+  38  $$4 :
+
+  39  statement : TOKEN_ID TOKEN_COL $$4 statement
+
+  40  $$5 :
+
+  41  statement : TOKEN_ID TOKEN_LPAR $$5 arglist_opt TOKEN_RPAR
+
+  42  $$6 :
+
+  43  $$7 :
+
+  44  statement : TOKEN_ID $$6 TOKEN_LBRA expression TOKEN_RBRA $$7 TOKEN_COLEQ expression
+
+  45  $$8 :
+
+  46  statement : TOKEN_IF expression TOKEN_THEN $$8 statement else_opt
+
+  47  $$9 :
+
+  48  $$10 :
+
+  49  statement : TOKEN_WHILE $$9 expression TOKEN_DO $$10 statement
+
+  50  $$11 :
+
+  51  statement : TOKEN_REPEAT $$11 statement TOKEN_UNTIL expression
+  52            | TOKEN_GOTO TOKEN_ID
+  53            | TOKEN_RETURN expression
+  54            | TOKEN_BEGIN statementlist TOKEN_END
+
+  55  else_opt :
+
+  56  $$12 :
+
+  57  else_opt : TOKEN_ELSE $$12 statement
+
+  58  statementlist : statement
+  59                | statementlist TOKEN_SEMICOL statement
+
+  60  $$13 :
+
+  61  variable : TOKEN_LONG TOKEN_ID $$13 size_opt
+
+  62  $$14 :
+
+  63  variable : TOKEN_WORD TOKEN_ID $$14 size_opt
+
+  64  $$15 :
+
+  65  variable : TOKEN_BYTE TOKEN_ID $$15 size_opt
+
+  66  size_opt :
+  67           | TOKEN_LBRA TOKEN_NUM TOKEN_RBRA
+
+  68  $$16 :
+
+  69  $$17 :
+
+  70  $$18 :
+
+  71  function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement
+
+  72  paramlist_opt :
+  73                | paramlist
+
+  74  paramlist : variable
+  75            | paramlist TOKEN_COMMA variable
+
+  76  variablelist :
+  77               | variablelist variable TOKEN_SEMICOL
+
+  78  $$19 :
+
+  79  $$20 :
+
+  80  program : $$19 decllist $$20 statement
+
+  81  decllist :
+  82           | decllist function TOKEN_SEMICOL
+  83           | decllist variable addresspart TOKEN_SEMICOL
+
+  84  addresspart :
+  85              | TOKEN_COL TOKEN_NUM
+
+state 0
+	$accept : . program $end  (0)
+	$$19 : .  (78)
+
+	.  reduce 78
+
+	program  goto 1
+	$$19  goto 2
+
+
+state 1
+	$accept : program . $end  (0)
+
+	$end  accept
+
+
+state 2
+	program : $$19 . decllist $$20 statement  (80)
+	decllist : .  (81)
+
+	.  reduce 81
+
+	decllist  goto 3
+
+
+state 3
+	program : $$19 decllist . $$20 statement  (80)
+	decllist : decllist . function TOKEN_SEMICOL  (82)
+	decllist : decllist . variable addresspart TOKEN_SEMICOL  (83)
+	$$20 : .  (79)
+
+	TOKEN_LONG  shift 4
+	TOKEN_WORD  shift 5
+	TOKEN_BYTE  shift 6
+	TOKEN_FUNCTION  shift 7
+	$end  reduce 79
+	TOKEN_ID  reduce 79
+	TOKEN_IF  reduce 79
+	TOKEN_WHILE  reduce 79
+	TOKEN_REPEAT  reduce 79
+	TOKEN_GOTO  reduce 79
+	TOKEN_BEGIN  reduce 79
+	TOKEN_RETURN  reduce 79
+
+	variable  goto 8
+	function  goto 9
+	$$20  goto 10
+
+
+state 4
+	variable : TOKEN_LONG . TOKEN_ID $$13 size_opt  (61)
+
+	TOKEN_ID  shift 11
+	.  error
+
+
+state 5
+	variable : TOKEN_WORD . TOKEN_ID $$14 size_opt  (63)
+
+	TOKEN_ID  shift 12
+	.  error
+
+
+state 6
+	variable : TOKEN_BYTE . TOKEN_ID $$15 size_opt  (65)
+
+	TOKEN_ID  shift 13
+	.  error
+
+
+state 7
+	function : TOKEN_FUNCTION . TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement  (71)
+
+	TOKEN_ID  shift 14
+	.  error
+
+
+state 8
+	decllist : decllist variable . addresspart TOKEN_SEMICOL  (83)
+	addresspart : .  (84)
+
+	TOKEN_COL  shift 15
+	TOKEN_SEMICOL  reduce 84
+
+	addresspart  goto 16
+
+
+state 9
+	decllist : decllist function . TOKEN_SEMICOL  (82)
+
+	TOKEN_SEMICOL  shift 17
+	.  error
+
+
+state 10
+	program : $$19 decllist $$20 . statement  (80)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	$end  reduce 36
+
+	statement  goto 25
+
+
+state 11
+	variable : TOKEN_LONG TOKEN_ID . $$13 size_opt  (61)
+	$$13 : .  (60)
+
+	.  reduce 60
+
+	$$13  goto 26
+
+
+state 12
+	variable : TOKEN_WORD TOKEN_ID . $$14 size_opt  (63)
+	$$14 : .  (62)
+
+	.  reduce 62
+
+	$$14  goto 27
+
+
+state 13
+	variable : TOKEN_BYTE TOKEN_ID . $$15 size_opt  (65)
+	$$15 : .  (64)
+
+	.  reduce 64
+
+	$$15  goto 28
+
+
+state 14
+	function : TOKEN_FUNCTION TOKEN_ID . $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement  (71)
+	$$16 : .  (68)
+
+	.  reduce 68
+
+	$$16  goto 29
+
+
+state 15
+	addresspart : TOKEN_COL . TOKEN_NUM  (85)
+
+	TOKEN_NUM  shift 30
+	.  error
+
+
+state 16
+	decllist : decllist variable addresspart . TOKEN_SEMICOL  (83)
+
+	TOKEN_SEMICOL  shift 31
+	.  error
+
+
+state 17
+	decllist : decllist function TOKEN_SEMICOL .  (82)
+
+	.  reduce 82
+
+
+state 18
+	statement : TOKEN_ID . TOKEN_COLEQ expression  (37)
+	statement : TOKEN_ID . TOKEN_COL $$4 statement  (39)
+	statement : TOKEN_ID . TOKEN_LPAR $$5 arglist_opt TOKEN_RPAR  (41)
+	statement : TOKEN_ID . $$6 TOKEN_LBRA expression TOKEN_RBRA $$7 TOKEN_COLEQ expression  (44)
+	$$6 : .  (42)
+
+	TOKEN_COL  shift 32
+	TOKEN_COLEQ  shift 33
+	TOKEN_LPAR  shift 34
+	TOKEN_LBRA  reduce 42
+
+	$$6  goto 35
+
+
+state 19
+	statement : TOKEN_IF . expression TOKEN_THEN $$8 statement else_opt  (46)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 43
+	term  goto 44
+	polynomial  goto 45
+
+
+state 20
+	statement : TOKEN_WHILE . $$9 expression TOKEN_DO $$10 statement  (49)
+	$$9 : .  (47)
+
+	.  reduce 47
+
+	$$9  goto 46
+
+
+state 21
+	statement : TOKEN_REPEAT . $$11 statement TOKEN_UNTIL expression  (51)
+	$$11 : .  (50)
+
+	.  reduce 50
+
+	$$11  goto 47
+
+
+state 22
+	statement : TOKEN_GOTO . TOKEN_ID  (52)
+
+	TOKEN_ID  shift 48
+	.  error
+
+
+state 23
+	statement : TOKEN_BEGIN . statementlist TOKEN_END  (54)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 49
+	statementlist  goto 50
+
+
+state 24
+	statement : TOKEN_RETURN . expression  (53)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 51
+	term  goto 44
+	polynomial  goto 45
+
+
+state 25
+	program : $$19 decllist $$20 statement .  (80)
+
+	.  reduce 80
+
+
+state 26
+	variable : TOKEN_LONG TOKEN_ID $$13 . size_opt  (61)
+	size_opt : .  (66)
+
+	TOKEN_LBRA  shift 52
+	TOKEN_COL  reduce 66
+	TOKEN_SEMICOL  reduce 66
+	TOKEN_RPAR  reduce 66
+	TOKEN_COMMA  reduce 66
+
+	size_opt  goto 53
+
+
+state 27
+	variable : TOKEN_WORD TOKEN_ID $$14 . size_opt  (63)
+	size_opt : .  (66)
+
+	TOKEN_LBRA  shift 52
+	TOKEN_COL  reduce 66
+	TOKEN_SEMICOL  reduce 66
+	TOKEN_RPAR  reduce 66
+	TOKEN_COMMA  reduce 66
+
+	size_opt  goto 54
+
+
+state 28
+	variable : TOKEN_BYTE TOKEN_ID $$15 . size_opt  (65)
+	size_opt : .  (66)
+
+	TOKEN_LBRA  shift 52
+	TOKEN_COL  reduce 66
+	TOKEN_SEMICOL  reduce 66
+	TOKEN_RPAR  reduce 66
+	TOKEN_COMMA  reduce 66
+
+	size_opt  goto 55
+
+
+state 29
+	function : TOKEN_FUNCTION TOKEN_ID $$16 . TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement  (71)
+
+	TOKEN_LPAR  shift 56
+	.  error
+
+
+state 30
+	addresspart : TOKEN_COL TOKEN_NUM .  (85)
+
+	.  reduce 85
+
+
+state 31
+	decllist : decllist variable addresspart TOKEN_SEMICOL .  (83)
+
+	.  reduce 83
+
+
+state 32
+	statement : TOKEN_ID TOKEN_COL . $$4 statement  (39)
+	$$4 : .  (38)
+
+	.  reduce 38
+
+	$$4  goto 57
+
+
+state 33
+	statement : TOKEN_ID TOKEN_COLEQ . expression  (37)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 58
+	term  goto 44
+	polynomial  goto 45
+
+
+state 34
+	statement : TOKEN_ID TOKEN_LPAR . $$5 arglist_opt TOKEN_RPAR  (41)
+	$$5 : .  (40)
+
+	.  reduce 40
+
+	$$5  goto 59
+
+
+state 35
+	statement : TOKEN_ID $$6 . TOKEN_LBRA expression TOKEN_RBRA $$7 TOKEN_COLEQ expression  (44)
+
+	TOKEN_LBRA  shift 60
+	.  error
+
+
+state 36
+	factor : TOKEN_ID .  (1)
+	factor : TOKEN_ID . $$1 TOKEN_LPAR arglist_opt TOKEN_RPAR  (3)
+	factor : TOKEN_ID . $$2 TOKEN_LBRA expression TOKEN_RBRA  (5)
+	$$1 : .  (2)
+	$$2 : .  (4)
+
+	$end  reduce 1
+	TOKEN_SEMICOL  reduce 1
+	TOKEN_EQ  reduce 1
+	TOKEN_NE  reduce 1
+	TOKEN_LT  reduce 1
+	TOKEN_LE  reduce 1
+	TOKEN_GT  reduce 1
+	TOKEN_GE  reduce 1
+	TOKEN_LPAR  reduce 2
+	TOKEN_RPAR  reduce 1
+	TOKEN_PLUS  reduce 1
+	TOKEN_MINUS  reduce 1
+	TOKEN_ASTER  reduce 1
+	TOKEN_SLASH  reduce 1
+	TOKEN_PERCENT  reduce 1
+	TOKEN_COMMA  reduce 1
+	TOKEN_SHIFTL  reduce 1
+	TOKEN_SHIFTR  reduce 1
+	TOKEN_LBRA  reduce 4
+	TOKEN_RBRA  reduce 1
+	TOKEN_THEN  reduce 1
+	TOKEN_ELSE  reduce 1
+	TOKEN_DO  reduce 1
+	TOKEN_UNTIL  reduce 1
+	TOKEN_END  reduce 1
+	TOKEN_AND  reduce 1
+	TOKEN_OR  reduce 1
+
+	$$1  goto 61
+	$$2  goto 62
+
+
+state 37
+	factor : TOKEN_NUM .  (6)
+
+	.  reduce 6
+
+
+state 38
+	factor : TOKEN_LPAR . expression TOKEN_RPAR  (7)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 63
+	term  goto 44
+	polynomial  goto 45
+
+
+state 39
+	polynomial : TOKEN_PLUS . term termlist  (22)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 64
+
+
+state 40
+	polynomial : TOKEN_MINUS . term $$3 termlist  (24)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 65
+
+
+state 41
+	factor : TOKEN_NOT . factor  (8)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 66
+
+
+state 42
+	term : factor . factorlist  (13)
+	factorlist : .  (14)
+
+	.  reduce 14
+
+	factorlist  goto 67
+
+
+state 43
+	statement : TOKEN_IF expression . TOKEN_THEN $$8 statement else_opt  (46)
+
+	TOKEN_THEN  shift 68
+	.  error
+
+
+state 44
+	polynomial : term . termlist  (21)
+	termlist : .  (25)
+
+	.  reduce 25
+
+	termlist  goto 69
+
+
+state 45
+	expression : polynomial .  (29)
+	expression : polynomial . TOKEN_EQ polynomial  (30)
+	expression : polynomial . TOKEN_NE polynomial  (31)
+	expression : polynomial . TOKEN_LT polynomial  (32)
+	expression : polynomial . TOKEN_LE polynomial  (33)
+	expression : polynomial . TOKEN_GT polynomial  (34)
+	expression : polynomial . TOKEN_GE polynomial  (35)
+
+	TOKEN_EQ  shift 70
+	TOKEN_NE  shift 71
+	TOKEN_LT  shift 72
+	TOKEN_LE  shift 73
+	TOKEN_GT  shift 74
+	TOKEN_GE  shift 75
+	$end  reduce 29
+	TOKEN_SEMICOL  reduce 29
+	TOKEN_RPAR  reduce 29
+	TOKEN_COMMA  reduce 29
+	TOKEN_RBRA  reduce 29
+	TOKEN_THEN  reduce 29
+	TOKEN_ELSE  reduce 29
+	TOKEN_DO  reduce 29
+	TOKEN_UNTIL  reduce 29
+	TOKEN_END  reduce 29
+
+
+state 46
+	statement : TOKEN_WHILE $$9 . expression TOKEN_DO $$10 statement  (49)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 76
+	term  goto 44
+	polynomial  goto 45
+
+
+state 47
+	statement : TOKEN_REPEAT $$11 . statement TOKEN_UNTIL expression  (51)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	TOKEN_UNTIL  reduce 36
+
+	statement  goto 77
+
+
+state 48
+	statement : TOKEN_GOTO TOKEN_ID .  (52)
+
+	.  reduce 52
+
+
+state 49
+	statementlist : statement .  (58)
+
+	.  reduce 58
+
+
+state 50
+	statement : TOKEN_BEGIN statementlist . TOKEN_END  (54)
+	statementlist : statementlist . TOKEN_SEMICOL statement  (59)
+
+	TOKEN_SEMICOL  shift 78
+	TOKEN_END  shift 79
+	.  error
+
+
+state 51
+	statement : TOKEN_RETURN expression .  (53)
+
+	.  reduce 53
+
+
+state 52
+	size_opt : TOKEN_LBRA . TOKEN_NUM TOKEN_RBRA  (67)
+
+	TOKEN_NUM  shift 80
+	.  error
+
+
+state 53
+	variable : TOKEN_LONG TOKEN_ID $$13 size_opt .  (61)
+
+	.  reduce 61
+
+
+state 54
+	variable : TOKEN_WORD TOKEN_ID $$14 size_opt .  (63)
+
+	.  reduce 63
+
+
+state 55
+	variable : TOKEN_BYTE TOKEN_ID $$15 size_opt .  (65)
+
+	.  reduce 65
+
+
+state 56
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR . paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement  (71)
+	paramlist_opt : .  (72)
+
+	TOKEN_LONG  shift 4
+	TOKEN_WORD  shift 5
+	TOKEN_BYTE  shift 6
+	TOKEN_RPAR  reduce 72
+
+	variable  goto 81
+	paramlist_opt  goto 82
+	paramlist  goto 83
+
+
+state 57
+	statement : TOKEN_ID TOKEN_COL $$4 . statement  (39)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	$end  reduce 36
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_ELSE  reduce 36
+	TOKEN_UNTIL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 84
+
+
+state 58
+	statement : TOKEN_ID TOKEN_COLEQ expression .  (37)
+
+	.  reduce 37
+
+
+state 59
+	statement : TOKEN_ID TOKEN_LPAR $$5 . arglist_opt TOKEN_RPAR  (41)
+	arglist_opt : .  (9)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	TOKEN_RPAR  reduce 9
+
+	factor  goto 42
+	arglist_opt  goto 85
+	expression  goto 86
+	arglist  goto 87
+	term  goto 44
+	polynomial  goto 45
+
+
+state 60
+	statement : TOKEN_ID $$6 TOKEN_LBRA . expression TOKEN_RBRA $$7 TOKEN_COLEQ expression  (44)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 88
+	term  goto 44
+	polynomial  goto 45
+
+
+state 61
+	factor : TOKEN_ID $$1 . TOKEN_LPAR arglist_opt TOKEN_RPAR  (3)
+
+	TOKEN_LPAR  shift 89
+	.  error
+
+
+state 62
+	factor : TOKEN_ID $$2 . TOKEN_LBRA expression TOKEN_RBRA  (5)
+
+	TOKEN_LBRA  shift 90
+	.  error
+
+
+state 63
+	factor : TOKEN_LPAR expression . TOKEN_RPAR  (7)
+
+	TOKEN_RPAR  shift 91
+	.  error
+
+
+state 64
+	polynomial : TOKEN_PLUS term . termlist  (22)
+	termlist : .  (25)
+
+	.  reduce 25
+
+	termlist  goto 92
+
+
+state 65
+	polynomial : TOKEN_MINUS term . $$3 termlist  (24)
+	$$3 : .  (23)
+
+	.  reduce 23
+
+	$$3  goto 93
+
+
+state 66
+	factor : TOKEN_NOT factor .  (8)
+
+	.  reduce 8
+
+
+state 67
+	term : factor factorlist .  (13)
+	factorlist : factorlist . TOKEN_ASTER factor  (15)
+	factorlist : factorlist . TOKEN_SLASH factor  (16)
+	factorlist : factorlist . TOKEN_PERCENT factor  (17)
+	factorlist : factorlist . TOKEN_SHIFTL factor  (18)
+	factorlist : factorlist . TOKEN_SHIFTR factor  (19)
+	factorlist : factorlist . TOKEN_AND factor  (20)
+
+	TOKEN_ASTER  shift 94
+	TOKEN_SLASH  shift 95
+	TOKEN_PERCENT  shift 96
+	TOKEN_SHIFTL  shift 97
+	TOKEN_SHIFTR  shift 98
+	TOKEN_AND  shift 99
+	$end  reduce 13
+	TOKEN_SEMICOL  reduce 13
+	TOKEN_EQ  reduce 13
+	TOKEN_NE  reduce 13
+	TOKEN_LT  reduce 13
+	TOKEN_LE  reduce 13
+	TOKEN_GT  reduce 13
+	TOKEN_GE  reduce 13
+	TOKEN_RPAR  reduce 13
+	TOKEN_PLUS  reduce 13
+	TOKEN_MINUS  reduce 13
+	TOKEN_COMMA  reduce 13
+	TOKEN_RBRA  reduce 13
+	TOKEN_THEN  reduce 13
+	TOKEN_ELSE  reduce 13
+	TOKEN_DO  reduce 13
+	TOKEN_UNTIL  reduce 13
+	TOKEN_END  reduce 13
+	TOKEN_OR  reduce 13
+
+
+state 68
+	statement : TOKEN_IF expression TOKEN_THEN . $$8 statement else_opt  (46)
+	$$8 : .  (45)
+
+	.  reduce 45
+
+	$$8  goto 100
+
+
+state 69
+	polynomial : term termlist .  (21)
+	termlist : termlist . TOKEN_PLUS term  (26)
+	termlist : termlist . TOKEN_MINUS term  (27)
+	termlist : termlist . TOKEN_OR term  (28)
+
+	TOKEN_PLUS  shift 101
+	TOKEN_MINUS  shift 102
+	TOKEN_OR  shift 103
+	$end  reduce 21
+	TOKEN_SEMICOL  reduce 21
+	TOKEN_EQ  reduce 21
+	TOKEN_NE  reduce 21
+	TOKEN_LT  reduce 21
+	TOKEN_LE  reduce 21
+	TOKEN_GT  reduce 21
+	TOKEN_GE  reduce 21
+	TOKEN_RPAR  reduce 21
+	TOKEN_COMMA  reduce 21
+	TOKEN_RBRA  reduce 21
+	TOKEN_THEN  reduce 21
+	TOKEN_ELSE  reduce 21
+	TOKEN_DO  reduce 21
+	TOKEN_UNTIL  reduce 21
+	TOKEN_END  reduce 21
+
+
+state 70
+	expression : polynomial TOKEN_EQ . polynomial  (30)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 104
+
+
+state 71
+	expression : polynomial TOKEN_NE . polynomial  (31)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 105
+
+
+state 72
+	expression : polynomial TOKEN_LT . polynomial  (32)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 106
+
+
+state 73
+	expression : polynomial TOKEN_LE . polynomial  (33)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 107
+
+
+state 74
+	expression : polynomial TOKEN_GT . polynomial  (34)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 108
+
+
+state 75
+	expression : polynomial TOKEN_GE . polynomial  (35)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 44
+	polynomial  goto 109
+
+
+state 76
+	statement : TOKEN_WHILE $$9 expression . TOKEN_DO $$10 statement  (49)
+
+	TOKEN_DO  shift 110
+	.  error
+
+
+state 77
+	statement : TOKEN_REPEAT $$11 statement . TOKEN_UNTIL expression  (51)
+
+	TOKEN_UNTIL  shift 111
+	.  error
+
+
+state 78
+	statementlist : statementlist TOKEN_SEMICOL . statement  (59)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 112
+
+
+state 79
+	statement : TOKEN_BEGIN statementlist TOKEN_END .  (54)
+
+	.  reduce 54
+
+
+state 80
+	size_opt : TOKEN_LBRA TOKEN_NUM . TOKEN_RBRA  (67)
+
+	TOKEN_RBRA  shift 113
+	.  error
+
+
+state 81
+	paramlist : variable .  (74)
+
+	.  reduce 74
+
+
+state 82
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt . TOKEN_RPAR $$17 variablelist $$18 statement  (71)
+
+	TOKEN_RPAR  shift 114
+	.  error
+
+
+state 83
+	paramlist_opt : paramlist .  (73)
+	paramlist : paramlist . TOKEN_COMMA variable  (75)
+
+	TOKEN_COMMA  shift 115
+	TOKEN_RPAR  reduce 73
+
+
+state 84
+	statement : TOKEN_ID TOKEN_COL $$4 statement .  (39)
+
+	.  reduce 39
+
+
+state 85
+	statement : TOKEN_ID TOKEN_LPAR $$5 arglist_opt . TOKEN_RPAR  (41)
+
+	TOKEN_RPAR  shift 116
+	.  error
+
+
+state 86
+	arglist : expression .  (11)
+
+	.  reduce 11
+
+
+state 87
+	arglist_opt : arglist .  (10)
+	arglist : arglist . TOKEN_COMMA expression  (12)
+
+	TOKEN_COMMA  shift 117
+	TOKEN_RPAR  reduce 10
+
+
+state 88
+	statement : TOKEN_ID $$6 TOKEN_LBRA expression . TOKEN_RBRA $$7 TOKEN_COLEQ expression  (44)
+
+	TOKEN_RBRA  shift 118
+	.  error
+
+
+state 89
+	factor : TOKEN_ID $$1 TOKEN_LPAR . arglist_opt TOKEN_RPAR  (3)
+	arglist_opt : .  (9)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	TOKEN_RPAR  reduce 9
+
+	factor  goto 42
+	arglist_opt  goto 119
+	expression  goto 86
+	arglist  goto 87
+	term  goto 44
+	polynomial  goto 45
+
+
+state 90
+	factor : TOKEN_ID $$2 TOKEN_LBRA . expression TOKEN_RBRA  (5)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 120
+	term  goto 44
+	polynomial  goto 45
+
+
+state 91
+	factor : TOKEN_LPAR expression TOKEN_RPAR .  (7)
+
+	.  reduce 7
+
+
+state 92
+	polynomial : TOKEN_PLUS term termlist .  (22)
+	termlist : termlist . TOKEN_PLUS term  (26)
+	termlist : termlist . TOKEN_MINUS term  (27)
+	termlist : termlist . TOKEN_OR term  (28)
+
+	TOKEN_PLUS  shift 101
+	TOKEN_MINUS  shift 102
+	TOKEN_OR  shift 103
+	$end  reduce 22
+	TOKEN_SEMICOL  reduce 22
+	TOKEN_EQ  reduce 22
+	TOKEN_NE  reduce 22
+	TOKEN_LT  reduce 22
+	TOKEN_LE  reduce 22
+	TOKEN_GT  reduce 22
+	TOKEN_GE  reduce 22
+	TOKEN_RPAR  reduce 22
+	TOKEN_COMMA  reduce 22
+	TOKEN_RBRA  reduce 22
+	TOKEN_THEN  reduce 22
+	TOKEN_ELSE  reduce 22
+	TOKEN_DO  reduce 22
+	TOKEN_UNTIL  reduce 22
+	TOKEN_END  reduce 22
+
+
+state 93
+	polynomial : TOKEN_MINUS term $$3 . termlist  (24)
+	termlist : .  (25)
+
+	.  reduce 25
+
+	termlist  goto 121
+
+
+state 94
+	factorlist : factorlist TOKEN_ASTER . factor  (15)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 122
+
+
+state 95
+	factorlist : factorlist TOKEN_SLASH . factor  (16)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 123
+
+
+state 96
+	factorlist : factorlist TOKEN_PERCENT . factor  (17)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 124
+
+
+state 97
+	factorlist : factorlist TOKEN_SHIFTL . factor  (18)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 125
+
+
+state 98
+	factorlist : factorlist TOKEN_SHIFTR . factor  (19)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 126
+
+
+state 99
+	factorlist : factorlist TOKEN_AND . factor  (20)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 127
+
+
+state 100
+	statement : TOKEN_IF expression TOKEN_THEN $$8 . statement else_opt  (46)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	$end  reduce 36
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_ELSE  reduce 36
+	TOKEN_UNTIL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 128
+
+
+state 101
+	termlist : termlist TOKEN_PLUS . term  (26)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 129
+
+
+state 102
+	termlist : termlist TOKEN_MINUS . term  (27)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 130
+
+
+state 103
+	termlist : termlist TOKEN_OR . term  (28)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	term  goto 131
+
+
+state 104
+	expression : polynomial TOKEN_EQ polynomial .  (30)
+
+	.  reduce 30
+
+
+state 105
+	expression : polynomial TOKEN_NE polynomial .  (31)
+
+	.  reduce 31
+
+
+state 106
+	expression : polynomial TOKEN_LT polynomial .  (32)
+
+	.  reduce 32
+
+
+state 107
+	expression : polynomial TOKEN_LE polynomial .  (33)
+
+	.  reduce 33
+
+
+state 108
+	expression : polynomial TOKEN_GT polynomial .  (34)
+
+	.  reduce 34
+
+
+state 109
+	expression : polynomial TOKEN_GE polynomial .  (35)
+
+	.  reduce 35
+
+
+state 110
+	statement : TOKEN_WHILE $$9 expression TOKEN_DO . $$10 statement  (49)
+	$$10 : .  (48)
+
+	.  reduce 48
+
+	$$10  goto 132
+
+
+state 111
+	statement : TOKEN_REPEAT $$11 statement TOKEN_UNTIL . expression  (51)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 133
+	term  goto 44
+	polynomial  goto 45
+
+
+state 112
+	statementlist : statementlist TOKEN_SEMICOL statement .  (59)
+
+	.  reduce 59
+
+
+state 113
+	size_opt : TOKEN_LBRA TOKEN_NUM TOKEN_RBRA .  (67)
+
+	.  reduce 67
+
+
+state 114
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR . $$17 variablelist $$18 statement  (71)
+	$$17 : .  (69)
+
+	.  reduce 69
+
+	$$17  goto 134
+
+
+state 115
+	paramlist : paramlist TOKEN_COMMA . variable  (75)
+
+	TOKEN_LONG  shift 4
+	TOKEN_WORD  shift 5
+	TOKEN_BYTE  shift 6
+	.  error
+
+	variable  goto 135
+
+
+state 116
+	statement : TOKEN_ID TOKEN_LPAR $$5 arglist_opt TOKEN_RPAR .  (41)
+
+	.  reduce 41
+
+
+state 117
+	arglist : arglist TOKEN_COMMA . expression  (12)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 136
+	term  goto 44
+	polynomial  goto 45
+
+
+state 118
+	statement : TOKEN_ID $$6 TOKEN_LBRA expression TOKEN_RBRA . $$7 TOKEN_COLEQ expression  (44)
+	$$7 : .  (43)
+
+	.  reduce 43
+
+	$$7  goto 137
+
+
+state 119
+	factor : TOKEN_ID $$1 TOKEN_LPAR arglist_opt . TOKEN_RPAR  (3)
+
+	TOKEN_RPAR  shift 138
+	.  error
+
+
+state 120
+	factor : TOKEN_ID $$2 TOKEN_LBRA expression . TOKEN_RBRA  (5)
+
+	TOKEN_RBRA  shift 139
+	.  error
+
+
+state 121
+	polynomial : TOKEN_MINUS term $$3 termlist .  (24)
+	termlist : termlist . TOKEN_PLUS term  (26)
+	termlist : termlist . TOKEN_MINUS term  (27)
+	termlist : termlist . TOKEN_OR term  (28)
+
+	TOKEN_PLUS  shift 101
+	TOKEN_MINUS  shift 102
+	TOKEN_OR  shift 103
+	$end  reduce 24
+	TOKEN_SEMICOL  reduce 24
+	TOKEN_EQ  reduce 24
+	TOKEN_NE  reduce 24
+	TOKEN_LT  reduce 24
+	TOKEN_LE  reduce 24
+	TOKEN_GT  reduce 24
+	TOKEN_GE  reduce 24
+	TOKEN_RPAR  reduce 24
+	TOKEN_COMMA  reduce 24
+	TOKEN_RBRA  reduce 24
+	TOKEN_THEN  reduce 24
+	TOKEN_ELSE  reduce 24
+	TOKEN_DO  reduce 24
+	TOKEN_UNTIL  reduce 24
+	TOKEN_END  reduce 24
+
+
+state 122
+	factorlist : factorlist TOKEN_ASTER factor .  (15)
+
+	.  reduce 15
+
+
+state 123
+	factorlist : factorlist TOKEN_SLASH factor .  (16)
+
+	.  reduce 16
+
+
+state 124
+	factorlist : factorlist TOKEN_PERCENT factor .  (17)
+
+	.  reduce 17
+
+
+state 125
+	factorlist : factorlist TOKEN_SHIFTL factor .  (18)
+
+	.  reduce 18
+
+
+state 126
+	factorlist : factorlist TOKEN_SHIFTR factor .  (19)
+
+	.  reduce 19
+
+
+state 127
+	factorlist : factorlist TOKEN_AND factor .  (20)
+
+	.  reduce 20
+
+
+128: shift/reduce conflict (shift 140, reduce 55) on TOKEN_ELSE
+state 128
+	statement : TOKEN_IF expression TOKEN_THEN $$8 statement . else_opt  (46)
+	else_opt : .  (55)
+
+	TOKEN_ELSE  shift 140
+	$end  reduce 55
+	TOKEN_SEMICOL  reduce 55
+	TOKEN_UNTIL  reduce 55
+	TOKEN_END  reduce 55
+
+	else_opt  goto 141
+
+
+state 129
+	termlist : termlist TOKEN_PLUS term .  (26)
+
+	.  reduce 26
+
+
+state 130
+	termlist : termlist TOKEN_MINUS term .  (27)
+
+	.  reduce 27
+
+
+state 131
+	termlist : termlist TOKEN_OR term .  (28)
+
+	.  reduce 28
+
+
+state 132
+	statement : TOKEN_WHILE $$9 expression TOKEN_DO $$10 . statement  (49)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	$end  reduce 36
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_ELSE  reduce 36
+	TOKEN_UNTIL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 142
+
+
+state 133
+	statement : TOKEN_REPEAT $$11 statement TOKEN_UNTIL expression .  (51)
+
+	.  reduce 51
+
+
+state 134
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 . variablelist $$18 statement  (71)
+	variablelist : .  (76)
+
+	.  reduce 76
+
+	variablelist  goto 143
+
+
+state 135
+	paramlist : paramlist TOKEN_COMMA variable .  (75)
+
+	.  reduce 75
+
+
+state 136
+	arglist : arglist TOKEN_COMMA expression .  (12)
+
+	.  reduce 12
+
+
+state 137
+	statement : TOKEN_ID $$6 TOKEN_LBRA expression TOKEN_RBRA $$7 . TOKEN_COLEQ expression  (44)
+
+	TOKEN_COLEQ  shift 144
+	.  error
+
+
+state 138
+	factor : TOKEN_ID $$1 TOKEN_LPAR arglist_opt TOKEN_RPAR .  (3)
+
+	.  reduce 3
+
+
+state 139
+	factor : TOKEN_ID $$2 TOKEN_LBRA expression TOKEN_RBRA .  (5)
+
+	.  reduce 5
+
+
+state 140
+	else_opt : TOKEN_ELSE . $$12 statement  (57)
+	$$12 : .  (56)
+
+	.  reduce 56
+
+	$$12  goto 145
+
+
+state 141
+	statement : TOKEN_IF expression TOKEN_THEN $$8 statement else_opt .  (46)
+
+	.  reduce 46
+
+
+state 142
+	statement : TOKEN_WHILE $$9 expression TOKEN_DO $$10 statement .  (49)
+
+	.  reduce 49
+
+
+state 143
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist . $$18 statement  (71)
+	variablelist : variablelist . variable TOKEN_SEMICOL  (77)
+	$$18 : .  (70)
+
+	TOKEN_LONG  shift 4
+	TOKEN_WORD  shift 5
+	TOKEN_BYTE  shift 6
+	TOKEN_ID  reduce 70
+	TOKEN_SEMICOL  reduce 70
+	TOKEN_IF  reduce 70
+	TOKEN_WHILE  reduce 70
+	TOKEN_REPEAT  reduce 70
+	TOKEN_GOTO  reduce 70
+	TOKEN_BEGIN  reduce 70
+	TOKEN_RETURN  reduce 70
+
+	variable  goto 146
+	$$18  goto 147
+
+
+state 144
+	statement : TOKEN_ID $$6 TOKEN_LBRA expression TOKEN_RBRA $$7 TOKEN_COLEQ . expression  (44)
+
+	TOKEN_ID  shift 36
+	TOKEN_NUM  shift 37
+	TOKEN_LPAR  shift 38
+	TOKEN_PLUS  shift 39
+	TOKEN_MINUS  shift 40
+	TOKEN_NOT  shift 41
+	.  error
+
+	factor  goto 42
+	expression  goto 148
+	term  goto 44
+	polynomial  goto 45
+
+
+state 145
+	else_opt : TOKEN_ELSE $$12 . statement  (57)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	$end  reduce 36
+	TOKEN_SEMICOL  reduce 36
+	TOKEN_ELSE  reduce 36
+	TOKEN_UNTIL  reduce 36
+	TOKEN_END  reduce 36
+
+	statement  goto 149
+
+
+state 146
+	variablelist : variablelist variable . TOKEN_SEMICOL  (77)
+
+	TOKEN_SEMICOL  shift 150
+	.  error
+
+
+state 147
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 . statement  (71)
+	statement : .  (36)
+
+	TOKEN_ID  shift 18
+	TOKEN_IF  shift 19
+	TOKEN_WHILE  shift 20
+	TOKEN_REPEAT  shift 21
+	TOKEN_GOTO  shift 22
+	TOKEN_BEGIN  shift 23
+	TOKEN_RETURN  shift 24
+	TOKEN_SEMICOL  reduce 36
+
+	statement  goto 151
+
+
+state 148
+	statement : TOKEN_ID $$6 TOKEN_LBRA expression TOKEN_RBRA $$7 TOKEN_COLEQ expression .  (44)
+
+	.  reduce 44
+
+
+state 149
+	else_opt : TOKEN_ELSE $$12 statement .  (57)
+
+	.  reduce 57
+
+
+state 150
+	variablelist : variablelist variable TOKEN_SEMICOL .  (77)
+
+	.  reduce 77
+
+
+state 151
+	function : TOKEN_FUNCTION TOKEN_ID $$16 TOKEN_LPAR paramlist_opt TOKEN_RPAR $$17 variablelist $$18 statement .  (71)
+
+	.  reduce 71
+
+
+State 128 contains 1 shift/reduce conflict.
+
+
+45 terminals, 41 nonterminals
+86 grammar rules, 152 states

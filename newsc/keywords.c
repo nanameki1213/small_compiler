@@ -1,4 +1,5 @@
 #include <string.h>
+#include "parser.h"
 #include "sc.h"
 
 keyword keywords[MAX_KEYWORDS];
